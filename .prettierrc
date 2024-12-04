@@ -1,0 +1,6 @@
+{
+  "semi": false,
+  "tabSize": 2,
+  "arrowParens": "avoid",
+  "singleQuote": true
+}
