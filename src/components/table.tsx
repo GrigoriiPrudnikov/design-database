@@ -1,13 +1,16 @@
-import { Position } from '@xyflow/react'
+import { Field } from '@/types'
+import { Node, NodeProps, Position } from '@xyflow/react'
 import { HybridHandle } from './hybridHandle'
 
-interface Props {
-  data: {
+export type TableNode = Node<
+  {
     label: string
-  }
-}
+    fields: Field[]
+  },
+  'table'
+>
 
-export function Node({ data }: Props) {
+export function Table({ data }: NodeProps<TableNode>) {
   return (
     <div className="bg-zinc-500 rounded-sm">
       <div>{data.label}</div>
@@ -25,12 +28,6 @@ export function Node({ data }: Props) {
         <HybridHandle position={Position.Right} id="source3" />
         <HybridHandle position={Position.Left} id="source32" />
       </div>
-      {/* <Handle
-        type="target"
-        position={Position.Top}
-        style={{ bottom: -10, right: 10 }} // Custom offset for target handle
-        id="target"
-      /> */}
     </div>
   )
 }
