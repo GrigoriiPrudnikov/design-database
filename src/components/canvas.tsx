@@ -121,11 +121,11 @@ export function Canvas() {
   )
 
   return (
-    <main className="grid grid-cols-[9fr_31fr] h-full">
+    <main className='grid grid-cols-[9fr_31fr] h-full'>
       <Sidebar nodes={sortedNodes} setNodes={setNodes} />
       <ReactFlow
-        className="h-full w-full text-white !bg-zinc-950"
-        colorMode="dark"
+        className='h-full w-full text-white !bg-zinc-950'
+        colorMode='dark'
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

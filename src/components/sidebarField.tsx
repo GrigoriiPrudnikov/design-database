@@ -26,15 +26,15 @@ export function SidebarField({ index, field, node, setNodes }: Props) {
   }
 
   return (
-    <div className="flex justify-between items-center h-10">
-      <div className="flex justify-start gap-2">
-        <div className="text-zinc-400">{index}</div>
-        <div className="text-white">{field.label}</div>
+    <div className='flex justify-between items-center h-10'>
+      <div className='flex justify-start gap-2'>
+        <div className='text-zinc-400'>{index}</div>
+        <div className='text-white'>{field.label}</div>
       </div>
       <Button
-        size="sm"
-        variant="outline"
-        className="w-20"
+        size='sm'
+        variant='outline'
+        className='w-20'
         onClick={() => toggleIsRequired()}
       >
         {field.isRequired ? 'Required' : 'Optional'}

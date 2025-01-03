@@ -18,15 +18,15 @@ interface Props {
 
 export function Sidebar({ nodes, setNodes }: Props) {
   return (
-    <div className="bg-zinc-950 h-full border-r border-zinc-800">
-      <Accordion type="multiple" className="w-full">
+    <div className='bg-zinc-950 h-full border-r border-zinc-800'>
+      <Accordion type='multiple' className='w-full'>
         {nodes.map(node => (
           <AccordionItem
             value={node.id}
             key={node.id}
-            className="border-b-zinc-800 border-b px-2"
+            className='border-b-zinc-800 border-b px-2'
           >
-            <AccordionTrigger className="text-white">
+            <AccordionTrigger className='text-white'>
               {node.data.label}
             </AccordionTrigger>
             <AccordionContent>
