@@ -40,6 +40,7 @@ export function Sidebar({ nodes, setNodes }: Props) {
                     setNodes={setNodes}
                   />
                 ))}
+              <button className='underline'>New field</button>
             </AccordionContent>
           </AccordionItem>
         ))}
