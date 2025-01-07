@@ -1,5 +1,6 @@
 export * from './canvas'
-export * from './table'
+export * from './createFieldDialog'
 export * from './sidebar'
 export * from './sidebarField'
+export * from './table'
 export * from './themeProvider'

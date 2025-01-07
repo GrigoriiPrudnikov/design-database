@@ -20,27 +20,13 @@ interface Props {
 }
 
 export function SidebarField({ index, field, node, setNodes }: Props) {
-  function toggleIsRequired(): void {
+  function updateField(updates: Partial<Field>): void {
     const updatedNode: TableNode = {
       ...node,
       data: {
         ...node.data,
         fields: node.data.fields.map(f =>
-          f.label === field.label ? { ...f, isRequired: !f.isRequired } : f,
-        ),
-      },
-    }
-
-    setNodes(nds => [...nds.filter(n => n.id !== node.id), updatedNode])
-  }
-
-  function setType(type: FieldType): void {
-    const updatedNode: TableNode = {
-      ...node,
-      data: {
-        ...node.data,
-        fields: node.data.fields.map(f =>
-          f.label === field.label ? { ...f, type } : f,
+          f.id === field.id ? { ...f, ...updates } : f,
         ),
       },
     }
@@ -49,17 +35,17 @@ export function SidebarField({ index, field, node, setNodes }: Props) {
   }
 
   return (
-    <div className='flex justify-between items-center h-10'>
-      <div className='flex justify-start gap-2'>
+    <div className='flex justify-between items-center gap-2 min-h-10'>
+      <div className='flex justify-start items-center gap-2'>
         <div className='text-zinc-400'>{index}</div>
-        <div className='text-white'>{field.label}</div>
+        <div className='text-white break-all max-w-full'>{field.label}</div>
       </div>
-      <div className='flex justify-end items-center gap-2'>
+      <div className='flex justify-end items-center gap-2 flex-shrink-0'>
         <Select
           defaultValue={field.type}
-          onValueChange={type => setType(type as FieldType)}
+          onValueChange={(type: FieldType) => updateField({ type })}
         >
-          <SelectTrigger>
+          <SelectTrigger className='bg-zinc-950'>
             <SelectValue placeholder='' />
           </SelectTrigger>
           <SelectContent>
@@ -74,7 +60,7 @@ export function SidebarField({ index, field, node, setNodes }: Props) {
           size='sm'
           variant='outline'
           className='min-w-20'
-          onClick={() => toggleIsRequired()}
+          onClick={() => updateField({ isRequired: !field.isRequired })}
         >
           {field.isRequired ? 'Required' : 'Optional'}
         </Button>

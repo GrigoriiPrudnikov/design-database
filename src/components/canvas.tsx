@@ -17,6 +17,7 @@ import '@xyflow/react/dist/style.css'
 import { useCallback, useMemo, useRef } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 import { Sidebar, Table, TableNode } from '.'
+import { nanoid } from 'nanoid'
 
 const initialNodes: TableNode[] = [
   {
@@ -26,16 +27,19 @@ const initialNodes: TableNode[] = [
       label: 'Node 1',
       fields: [
         {
+          id: nanoid(),
           label: 'id',
           type: FieldType.INT,
           isRequired: true,
         },
         {
+          id: nanoid(),
           label: 'name',
           type: FieldType.VARCHAR,
           isRequired: true,
         },
         {
+          id: nanoid(),
           label: 'created_at',
           type: FieldType.DATETIME,
           isRequired: false,

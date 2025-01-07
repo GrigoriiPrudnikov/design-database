@@ -1,4 +1,5 @@
 export interface Field {
+  id: string
   label: string
   type: FieldType
   isRequired: boolean

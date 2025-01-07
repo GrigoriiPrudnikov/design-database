@@ -1,15 +1,15 @@
-'use client'
-
-import { Accordion, AccordionContent, AccordionItem } from '@/components/ui'
-import dynamic from 'next/dynamic'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui'
+import { FieldType } from '@/types'
+import { nanoid } from 'nanoid'
 import { Dispatch, SetStateAction } from 'react'
+import { CreateFieldDialog } from './createFieldDialog'
 import { SidebarField } from './sidebarField'
 import { TableNode } from './table'
-
-const AccordionTrigger = dynamic(
-  () => import('./ui').then(mod => mod.AccordionTrigger),
-  { ssr: false },
-)
 
 interface Props {
   nodes: TableNode[]
@@ -17,8 +17,39 @@ interface Props {
 }
 
 export function Sidebar({ nodes, setNodes }: Props) {
+  function createField(node: TableNode, label: string): void {
+    const found = node.data.fields.find(f => f.label === toSnakeCase(label))
+
+    if (found) return
+
+    const updatedNode: TableNode = {
+      ...node,
+      data: {
+        ...node.data,
+        fields: [
+          ...node.data.fields,
+          {
+            label: toSnakeCase(label),
+            id: nanoid(),
+            type: FieldType.INT,
+            isRequired: true,
+          },
+        ],
+      },
+    }
+
+    setNodes(nds => [...nds.filter(n => n.id !== node.id), updatedNode])
+  }
+
+  function toSnakeCase(str: string) {
+    return str
+      .replace(/([a-z])([A-Z])/g, '$1_$2')
+      .replace(/\s+|[-]+/g, '_')
+      .toLowerCase()
+  }
+
   return (
-    <div className='bg-zinc-950 h-full border-r border-zinc-800'>
+    <div className='bg-zinc-950 h-full max-w-[22.5vw] border-r border-zinc-800'>
       <Accordion type='multiple' className='w-full'>
         {nodes.map(node => (
           <AccordionItem
@@ -33,14 +64,18 @@ export function Sidebar({ nodes, setNodes }: Props) {
               {node.data.fields &&
                 node.data.fields.map((field, index) => (
                   <SidebarField
-                    key={field.label}
+                    key={field.id}
                     index={index}
                     field={field}
                     node={node}
                     setNodes={setNodes}
                   />
                 ))}
-              <button className='underline'>New field</button>
+              <CreateFieldDialog
+                key={node.id}
+                node={node}
+                createField={createField}
+              />
             </AccordionContent>
           </AccordionItem>
         ))}
