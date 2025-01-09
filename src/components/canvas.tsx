@@ -4,6 +4,7 @@ import { FieldType } from '@/types'
 import {
   addEdge,
   applyNodeChanges,
+  ConnectionMode,
   type Edge,
   NodeTypes,
   OnConnect,
@@ -14,10 +15,10 @@ import {
   reconnectEdge,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import { nanoid } from 'nanoid'
 import { useCallback, useMemo, useRef } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 import { Sidebar, Table, TableNode } from '.'
-import { nanoid } from 'nanoid'
 
 const initialNodes: TableNode[] = [
   {
@@ -100,7 +101,11 @@ export function Canvas() {
   )
 
   const onConnect: OnConnect = useCallback(
-    connection => setEdges(eds => addEdge(connection, eds)),
+    connection => {
+      const isValid = connection.source !== connection.target // node cannot connect to itself
+
+      isValid && setEdges(eds => addEdge(connection, eds))
+    },
     [setEdges],
   )
 
@@ -139,6 +144,7 @@ export function Canvas() {
         onReconnectEnd={onReconnectEnd}
         defaultEdgeOptions={defaultEdgeOptions}
         nodeTypes={nodeTypes}
+        connectionMode={ConnectionMode.Loose}
         fitView
       />
     </main>

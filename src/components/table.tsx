@@ -1,6 +1,7 @@
 import { Field } from '@/types'
-import { Node, NodeProps, Position } from '@xyflow/react'
-import { HybridHandle } from './hybridHandle'
+import { Node, NodeProps } from '@xyflow/react'
+import { Card } from './ui'
+import { TableField } from '.'
 
 export type TableNode = Node<
   {
@@ -11,23 +12,16 @@ export type TableNode = Node<
 >
 
 export function Table({ data }: NodeProps<TableNode>) {
-  return (
-    <div className='bg-zinc-500 rounded-sm'>
-      <div>{data.label}</div>
+  const { label, fields } = data
 
-      {/* Handle at custom position */}
-      <div className='min-h-12 relative'>
-        <HybridHandle position={Position.Right} id='source1' />
-        <HybridHandle position={Position.Left} id='source12' />
+  return (
+    <Card className='min-w-32 max-w-44 rounded-md text-[0.5rem]'>
+      <div className='flex justify-center items-center min-h-4'>{label}</div>
+      <div className='flex flex-col gap-2 py-2 border-t border-zinc-800'>
+        {fields.map(f => (
+          <TableField key={f.id} field={f} />
+        ))}
       </div>
-      <div className='min-h-12 relative'>
-        <HybridHandle position={Position.Right} id='source2' />
-        <HybridHandle position={Position.Left} id='source22' />
-      </div>
-      <div className='min-h-12 relative'>
-        <HybridHandle position={Position.Right} id='source3' />
-        <HybridHandle position={Position.Left} id='source32' />
-      </div>
-    </div>
+    </Card>
   )
 }

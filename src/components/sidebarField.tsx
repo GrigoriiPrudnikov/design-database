@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from './ui'
 
-const DATA_TYPES = Object.keys(FieldType) as Array<keyof typeof FieldType>
+const DATA_TYPES = Object.values(FieldType) as string[]
 
 interface Props {
   index: number
