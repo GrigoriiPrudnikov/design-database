@@ -116,7 +116,9 @@ export function Canvas() {
 
   const onReconnect: OnReconnect = useCallback((oldEdge, newConnection) => {
     edgeReconnectSuccessful.current = true
-    setEdges(els => reconnectEdge(oldEdge, newConnection, els))
+    const isValid = newConnection.source !== newConnection.target // node cannot reconnect to itself
+
+    isValid && setEdges(els => reconnectEdge(oldEdge, newConnection, els))
   }, [])
 
   const onReconnectEnd: ReactFlowProps['onReconnectEnd'] = useCallback(

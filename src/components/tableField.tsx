@@ -17,7 +17,7 @@ export function TableField({ field }: { field: Field }) {
 
   return (
     <div
-      className='px-2 relative'
+      className='px-2 py-1 relative'
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -26,18 +26,22 @@ export function TableField({ field }: { field: Field }) {
         <div>{type}</div>
       </div>
       <div>
-        <CustomHandle
-          type='source'
-          position={Position.Right}
-          id={`${id}_right`}
-          className={rightHidden ? 'opacity-0' : ''}
-        />
-        <CustomHandle
-          type='source'
-          position={Position.Left}
-          id={`${id}_left`}
-          className={leftHidden ? 'opacity-0' : ''}
-        />
+        {leftConnections < 1 && (
+          <CustomHandle
+            type='source'
+            position={Position.Right}
+            id={`${id}_right`}
+            className={rightHidden ? 'opacity-0' : ''}
+          />
+        )}
+        {rightConnections < 1 && (
+          <CustomHandle
+            type='source'
+            position={Position.Left}
+            id={`${id}_left`}
+            className={leftHidden ? 'opacity-0' : ''}
+          />
+        )}
       </div>
     </div>
   )
