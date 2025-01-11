@@ -16,7 +16,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { nanoid } from 'nanoid'
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 import { Sidebar, Table, TableNode } from '.'
 
@@ -67,16 +67,18 @@ const defaultEdgeOptions: Partial<Edge> = {
 }
 
 export function Canvas() {
-  const [nodes, setNodes, removeNodes] = useLocalStorage<TableNode[]>(
+  const [isMounted, setIsMounted] = useState(false)
+
+  const [nodes, setNodes] = useLocalStorage<TableNode[]>(
     'nodes',
     initialNodes,
   )
-  const [edges, setEdges, removeEdges] = useLocalStorage<Edge[]>('edges', [])
-  const [connections, setConnections, removeConnections] = useLocalStorage(
-    'connections',
-    [],
-  )
+  const [edges, setEdges] = useLocalStorage<Edge[]>('edges', [])
   const edgeReconnectSuccessful = useRef(true)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const sortedNodes = useMemo<TableNode[]>(
     () =>
@@ -103,7 +105,6 @@ export function Canvas() {
   const onConnect: OnConnect = useCallback(
     connection => {
       const isValid = connection.source !== connection.target // node cannot connect to itself
-
       isValid && setEdges(eds => addEdge(connection, eds))
     },
     [setEdges],
@@ -117,7 +118,6 @@ export function Canvas() {
   const onReconnect: OnReconnect = useCallback((oldEdge, newConnection) => {
     edgeReconnectSuccessful.current = true
     const isValid = newConnection.source !== newConnection.target // node cannot reconnect to itself
-
     isValid && setEdges(els => reconnectEdge(oldEdge, newConnection, els))
   }, [])
 
@@ -130,6 +130,8 @@ export function Canvas() {
     },
     [],
   )
+
+  if (!isMounted) return null
 
   return (
     <main className='grid grid-cols-[9fr_31fr] h-full'>

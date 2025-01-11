@@ -1,5 +1,7 @@
+'use client'
+
 import { Field, FieldType } from '@/types'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { TableNode } from './table'
 import {
   Button,
@@ -9,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui'
+import { CircleX, Minus } from 'lucide-react'
 
 const DATA_TYPES = Object.values(FieldType) as string[]
 
@@ -34,10 +37,37 @@ export function SidebarField({ index, field, node, setNodes }: Props) {
     setNodes(nds => [...nds.filter(n => n.id !== node.id), updatedNode])
   }
 
+  function removeField(): void {
+    const updatedNode: TableNode = {
+      ...node,
+      data: {
+        ...node.data,
+        fields: node.data.fields.filter(f => f.id !== field.id),
+      },
+    }
+
+    setNodes(nds => [...nds.filter(n => n.id !== node.id), updatedNode])
+  }
+
+  const [hover, setHover] = useState<boolean>(false)
+
   return (
     <div className='flex justify-between items-center gap-2 min-h-10'>
-      <div className='flex justify-start items-center gap-2'>
-        <div className='text-zinc-400'>{index}</div>
+      <div
+        className='flex justify-start items-center gap-2'
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+      >
+        {hover ? (
+          <button
+            className='text-zinc-400 transition-colors w-2'
+            onClick={() => removeField()}
+          >
+            -
+          </button>
+        ) : (
+          <div className='text-zinc-400 w-2'>{index}</div>
+        )}
         <div className='text-white break-all max-w-full'>{field.label}</div>
       </div>
       <div className='flex justify-end items-center gap-2 flex-shrink-0'>
