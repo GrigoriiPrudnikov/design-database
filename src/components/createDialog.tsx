@@ -14,20 +14,19 @@ import {
 } from './ui'
 
 interface Props {
-  create: (label: string) => void
-  label: string
   title: string
   description: string
+  create: (label: string) => void
 }
 
-export function CreateDialog({ create, label, title, description }: Props) {
+export function CreateDialog({ title, description, create }: Props) {
   const [input, setInput] = useState<string>('Untitled')
-  const valid = label.length > 0
+  const valid = input.trim().length > 0
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className='hover:underline'>{label}</button>
+        <button className='hover:underline'>{title}</button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>{title}</DialogTitle>

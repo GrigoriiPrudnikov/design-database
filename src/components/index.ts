@@ -1,8 +1,11 @@
 export * from './canvas'
 export * from './createDialog'
 export * from './customHandle'
+export * from './relationTypeToggle'
 export * from './sidebar'
 export * from './sidebarField'
+export * from './sidebarNode'
 export * from './table'
 export * from './tableField'
 export * from './themeProvider'
+

@@ -1,7 +1,8 @@
 {
   "name": "design-database",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -14,7 +15,7 @@
     "@radix-ui/react-scroll-area": "^1.2.2",
     "@radix-ui/react-select": "^2.1.4",
     "@radix-ui/react-slot": "^1.1.1",
-    "@xyflow/react": "^12.3.5",
+    "@xyflow/react": "^12.4.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
@@ -25,7 +26,7 @@
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "usehooks-ts": "^3.1.0"
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",

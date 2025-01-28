@@ -1,7 +1,9 @@
 'use client'
 
+import { Actions, State, useStore } from '@/state'
 import { Field, FieldType } from '@/types'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { TableNode } from './table'
 import {
   Button,
@@ -11,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui'
-import { CircleX, Minus } from 'lucide-react'
 
 const DATA_TYPES = Object.values(FieldType) as string[]
 
@@ -19,36 +20,17 @@ interface Props {
   index: number
   field: Field
   node: TableNode
-  setNodes: Dispatch<SetStateAction<TableNode[]>>
 }
 
-export function SidebarField({ index, field, node, setNodes }: Props) {
-  function updateField(updates: Partial<Field>): void {
-    const updatedNode: TableNode = {
-      ...node,
-      data: {
-        ...node.data,
-        fields: node.data.fields.map(f =>
-          f.id === field.id ? { ...f, ...updates } : f,
-        ),
-      },
-    }
-
-    setNodes(nds => [...nds.filter(n => n.id !== node.id), updatedNode])
+function selector(state: State & Actions) {
+  return {
+    updateField: state.updateField,
+    removeField: state.removeField,
   }
+}
 
-  function removeField(): void {
-    const updatedNode: TableNode = {
-      ...node,
-      data: {
-        ...node.data,
-        fields: node.data.fields.filter(f => f.id !== field.id),
-      },
-    }
-
-    setNodes(nds => [...nds.filter(n => n.id !== node.id), updatedNode])
-  }
-
+export function SidebarField({ index, field, node }: Props) {
+  const { updateField, removeField } = useStore(useShallow(selector))
   const [hover, setHover] = useState<boolean>(false)
 
   return (
@@ -61,7 +43,7 @@ export function SidebarField({ index, field, node, setNodes }: Props) {
         {hover ? (
           <button
             className='text-zinc-400 transition-colors w-2'
-            onClick={() => removeField()}
+            onClick={() => removeField(node, field.id)}
           >
             -
           </button>
@@ -73,7 +55,9 @@ export function SidebarField({ index, field, node, setNodes }: Props) {
       <div className='flex justify-end items-center gap-2 flex-shrink-0'>
         <Select
           defaultValue={field.type}
-          onValueChange={(type: FieldType) => updateField({ type })}
+          onValueChange={(type: FieldType) =>
+            updateField(node, field.id, { type })
+          }
         >
           <SelectTrigger className='bg-zinc-950'>
             <SelectValue placeholder='' />
@@ -90,7 +74,9 @@ export function SidebarField({ index, field, node, setNodes }: Props) {
           size='sm'
           variant='outline'
           className='min-w-20'
-          onClick={() => updateField({ isRequired: !field.isRequired })}
+          onClick={() =>
+            updateField(node, field.id, { isRequired: !field.isRequired })
+          }
         >
           {field.isRequired ? 'Required' : 'Optional'}
         </Button>

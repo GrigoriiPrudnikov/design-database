@@ -1,7 +1,7 @@
 import { Field } from '@/types'
 import { Node, NodeProps } from '@xyflow/react'
-import { Card } from './ui'
 import { TableField } from '.'
+import { Card } from './ui'
 
 export type TableNode = Node<
   {

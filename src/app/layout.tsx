@@ -1,8 +1,8 @@
+import { ThemeProvider } from '@/components'
 import { ReactFlowProvider } from '@xyflow/react'
 import { Metadata } from 'next'
 import { Space_Grotesk } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -26,7 +26,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute='class'
-          defaultTheme='system'
+          defaultTheme='dark'
           enableSystem
           disableTransitionOnChange
         >

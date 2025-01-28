@@ -1,8 +1,14 @@
-import { useHandleConnections } from '@xyflow/react'
+import { useNodeConnections } from '@xyflow/react'
 
-export function useAllConnections(id: string): number {
-  const sourceConnections = useHandleConnections({ type: 'source', id })
-  const targetConnections = useHandleConnections({ type: 'target', id })
+export function useAllConnections(handleId: string): number {
+  const sourceConnections = useNodeConnections({
+    handleType: 'source',
+    handleId,
+  })
+  const targetConnections = useNodeConnections({
+    handleType: 'target',
+    handleId,
+  })
 
   const connections = [...sourceConnections, ...targetConnections]
 
