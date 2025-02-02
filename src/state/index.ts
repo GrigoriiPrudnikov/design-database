@@ -1,6 +1,6 @@
 import { TableNode } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
-import { Field, FieldType, Relation } from '@/types'
+import { Column, ColumnType, Relation } from '@/types'
 import {
   addEdge,
   applyNodeChanges,
@@ -21,24 +21,30 @@ const initialNodes: TableNode[] = [
     position: { x: 500, y: 400 },
     data: {
       label: 'Node 1',
-      fields: [
+      columns: [
         {
           id: nanoid(),
           label: 'id',
-          type: FieldType.INT,
+          datatype: ColumnType.INT,
           isRequired: true,
+          isUnique: true,
+          isPrimaryKey: true,
         },
         {
           id: nanoid(),
           label: 'name',
-          type: FieldType.VARCHAR,
+          datatype: ColumnType.VARCHAR,
           isRequired: true,
+          isUnique: true,
+          isPrimaryKey: false,
         },
         {
           id: nanoid(),
           label: 'created_at',
-          type: FieldType.DATETIME,
+          datatype: ColumnType.DATETIME,
           isRequired: false,
+          isUnique: true,
+          isPrimaryKey: false,
         },
       ],
     },
@@ -48,7 +54,7 @@ const initialNodes: TableNode[] = [
   {
     id: '12',
     position: { x: 300, y: 400 },
-    data: { label: 'Node 2', fields: [] },
+    data: { label: 'Node 2', columns: [] },
     draggable: true,
     type: 'table',
   },
@@ -69,10 +75,11 @@ export interface Actions {
   onReconnectEnd: ReactFlowProps['onReconnectEnd']
   createTable: (label: string) => void
   removeTable: (id: string) => void
-  createField: (node: TableNode) => (label: string) => void
-  updateField: (node: TableNode, id: string, changes: Partial<Field>) => void
-  removeField: (node: TableNode, id: string) => void
+  createColumn: (node: TableNode) => (label: string) => void
+  updateColumn: (node: TableNode, id: string, changes: Partial<Column>) => void
+  removeColumn: (node: TableNode, id: string) => void
   changeRelationType: (id: string, toChange: 'target' | 'source') => void
+  updatePrimaryKey: (node: TableNode, columnId: string) => void
 }
 
 export const useStore = create<State & Actions>()(
@@ -114,19 +121,16 @@ export const useStore = create<State & Actions>()(
           sourceHandle?.split('__')[0] !== targetHandle?.split('__')[0]
         if (!isValid) return
 
-        const foundRel = get().relations.find(
+        const foundRelation = get().relations.find(
           rel => rel.target === oldEdge.targetHandle?.split('__')[0],
         )
-        if (!foundRel) return
-
-        console.log('old target:' + oldEdge.targetHandle?.split('__')[0])
-        console.log('new target:' + newConnection.targetHandle?.split('__')[0])
+        if (!foundRelation) return
 
         set({
           edgeReconnectSuccessful: true,
           edges: reconnectEdge(oldEdge, newConnection, get().edges),
           relations: get().relations.map(rel => {
-            if (rel.id !== foundRel.id) return rel
+            if (rel.id !== foundRelation.id) return rel
             return {
               ...rel,
               target: newConnection.targetHandle?.split('__')[0]!,
@@ -136,11 +140,16 @@ export const useStore = create<State & Actions>()(
       },
       onReconnectStart: () => set({ edgeReconnectSuccessful: false }),
       onReconnectEnd: (_, edge) => {
-        if (!get().edgeReconnectSuccessful) {
-          set({ edges: get().edges.filter(e => e.id !== edge.id) })
+        if (get().edgeReconnectSuccessful) {
+          set({ edgeReconnectSuccessful: false })
         }
 
-        set({ edgeReconnectSuccessful: false })
+        set({
+          edges: get().edges.filter(e => e.id !== edge.id),
+          relations: get().relations.filter(
+            rel => rel.target !== edge.targetHandle?.split('__')[0],
+          ),
+        })
       },
       createTable: label => {
         const nodes = get().nodes
@@ -153,7 +162,7 @@ export const useStore = create<State & Actions>()(
           position: calcNodePosition(nodes),
           data: {
             label: toSnakeCase(label),
-            fields: [],
+            columns: [],
           },
         }
 
@@ -169,10 +178,10 @@ export const useStore = create<State & Actions>()(
           edges: get().edges.filter(ed => ed.target !== id && ed.source !== id),
         })
       },
-      createField: node => {
+      createColumn: node => {
         return label => {
-          const found = node.data.fields.find(
-            f => f.label === toSnakeCase(label),
+          const found = node.data.columns.find(
+            c => c.label === toSnakeCase(label),
           )
           if (found) return
 
@@ -180,13 +189,15 @@ export const useStore = create<State & Actions>()(
             ...node,
             data: {
               ...node.data,
-              fields: [
-                ...node.data.fields,
+              columns: [
+                ...node.data.columns,
                 {
                   label: toSnakeCase(label),
                   id: nanoid(),
-                  type: FieldType.INT,
+                  datatype: ColumnType.INT,
                   isRequired: true,
+                  isUnique: false,
+                  isPrimaryKey: false,
                 },
               ],
             },
@@ -198,16 +209,16 @@ export const useStore = create<State & Actions>()(
           })
         }
       },
-      updateField: (node, id, changes) => {
+      updateColumn: (node, id, changes) => {
         const updates = {
           ...node,
           data: {
             ...node.data,
-            fields: node.data.fields.map(f => {
-              if (f.id !== id) return f
+            columns: node.data.columns.map(c => {
+              if (c.id !== id) return c
 
               return {
-                ...f,
+                ...c,
                 ...changes,
               }
             }),
@@ -221,12 +232,12 @@ export const useStore = create<State & Actions>()(
           }),
         })
       },
-      removeField: (node, id) => {
+      removeColumn: (node, id) => {
         const updates = {
           ...node,
           data: {
             ...node.data,
-            fields: node.data.fields.filter(f => f.id !== id),
+            columns: node.data.columns.filter(c => c.id !== id),
           },
         }
         set({
@@ -247,6 +258,23 @@ export const useStore = create<State & Actions>()(
             return {
               ...rel,
               [key]: value,
+            }
+          }),
+        })
+      },
+      updatePrimaryKey: (node, columnId) => {
+        set({
+          nodes: get().nodes.map(n => {
+            if (n.id !== node.id) return n
+            return {
+              ...n,
+              data: {
+                ...n.data,
+                columns: n.data.columns.map(c => ({
+                  ...c,
+                  isPrimaryKey: columnId === c.id,
+                })),
+              },
             }
           }),
         })

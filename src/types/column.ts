@@ -1,12 +1,13 @@
-export interface Field {
+export interface Column {
   id: string
   label: string
-  type: FieldType
+  datatype: ColumnType
   isRequired: boolean
-  param?: number
+  isUnique: boolean
+  isPrimaryKey: boolean
 }
 
-export enum FieldType {
+export enum ColumnType {
   INT = 'int',
   SMALLINT = 'smallint',
   BIGINT = 'bigint',

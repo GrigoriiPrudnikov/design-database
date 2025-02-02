@@ -1,10 +1,10 @@
 import { ThemeProvider } from '@/components'
 import { ReactFlowProvider } from '@xyflow/react'
 import { Metadata } from 'next'
-import { Space_Grotesk } from 'next/font/google'
+import { Roboto_Mono } from 'next/font/google'
 import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({
+const robotoMono = Roboto_Mono({
   subsets: ['latin'],
   weight: ['400'],
 })
@@ -21,9 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' className='dark' suppressHydrationWarning>
-      <body
-        className={`${spaceGrotesk.className} antialiased h-screen w-screen`}
-      >
+      <body className={`${robotoMono.className} antialiased h-screen w-screen`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='dark'

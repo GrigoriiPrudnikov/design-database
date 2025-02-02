@@ -58,7 +58,7 @@ export function Canvas() {
     <main className='grid grid-cols-[9fr_31fr] h-full'>
       <Sidebar />
       <ReactFlow
-        className='h-full w-full text-white !bg-zinc-950'
+        className='h-full w-full text-white !bg-zinc-950 z-50'
         colorMode='dark'
         nodes={nodes}
         edges={edges}

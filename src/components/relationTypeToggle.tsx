@@ -11,15 +11,15 @@ function selector(state: State & Actions) {
   }
 }
 
-export function RelationTypeToggle({ fieldId }: { fieldId: string }) {
+export function RelationTypeToggle({ columnId }: { columnId: string }) {
   const { relations, changeRelationType } = useStore(useShallow(selector))
   const relation = relations.find(
-    rel => rel.source === fieldId || rel.target === fieldId,
+    rel => rel.source === columnId || rel.target === columnId,
   )
 
   if (!relation) return null
 
-  const relationRole = relation.source === fieldId ? 'source' : 'target'
+  const relationRole = relation.source === columnId ? 'source' : 'target'
   const relationType =
     relationRole === 'target' ? relation.targetType : relation.sourceType
 

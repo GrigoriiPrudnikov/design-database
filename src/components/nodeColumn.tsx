@@ -1,17 +1,17 @@
 'use client'
 
 import { useAllConnections } from '@/hooks'
-import { Field } from '@/types'
+import { Column } from '@/types'
 import { Position } from '@xyflow/react'
 import { useState } from 'react'
 import { CustomHandle, RelationTypeToggle } from '.'
 
 interface Props {
-  field: Field
+  column: Column
 }
 
-export function TableField({ field }: Props) {
-  const { id, label, type } = field
+export function NodeColumn({ column }: Props) {
+  const { id, label, datatype: type } = column
   const [hover, setHover] = useState<boolean>(false)
   const rightConnections = useAllConnections(`${id}__right`)
   const leftConnections = useAllConnections(`${id}__left`)
@@ -21,7 +21,7 @@ export function TableField({ field }: Props) {
   const leftConnectable =
     (hover || leftConnections > 0) && rightConnections === 0
   // TODO:
-  // 1. Remove 1 connection per field resctriction
+  // 1. Remove 1 connection per column resctriction
   // 2. Add invalid relations handling
 
   return (
@@ -33,7 +33,7 @@ export function TableField({ field }: Props) {
       <div className='flex justify-between items-center gap-4'>
         <div className='flex items-center gap-1'>
           <div className='break-all max-w-full'>{label}</div>
-          <RelationTypeToggle fieldId={id} />
+          <RelationTypeToggle columnId={id} />
         </div>
         <div>{type}</div>
       </div>

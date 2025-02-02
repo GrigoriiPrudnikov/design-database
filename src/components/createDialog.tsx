@@ -19,6 +19,10 @@ interface Props {
   create: (label: string) => void
 }
 
+// TODO:
+// 1. confirm on enter
+// 2. if column is single in table, make it primary key
+
 export function CreateDialog({ title, description, create }: Props) {
   const [input, setInput] = useState<string>('Untitled')
   const valid = input.trim().length > 0
@@ -26,7 +30,7 @@ export function CreateDialog({ title, description, create }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className='hover:underline'>{title}</button>
+        <Button variant='ghost'>{title}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>{title}</DialogTitle>
