@@ -11,6 +11,8 @@ import { Button, Input } from './ui'
 interface Props {
   column: Column
   node: TableNode
+  placeholder: string
+  toChange: 'label' | 'defaultValue'
 }
 
 function selector(state: State & Actions) {
@@ -19,25 +21,27 @@ function selector(state: State & Actions) {
   }
 }
 
-// TODO: confirm on enter
-
-export function ChangeColumnName({ column, node }: Props) {
+export function ChangeProperty({ column, node, placeholder, toChange }: Props) {
   const { updateColumn } = useStore(useShallow(selector))
-  const [input, setInput] = useState<string>(column.label)
-  const disabled = input.trim() === column.label
+  const [input, setInput] = useState<string>(column[toChange] || '')
+  const disabled = input.trim() === column[toChange]
 
   return (
     <div className='flex items-center gap-2'>
       <Input
         value={input}
         onChange={e => setInput(e.target.value)}
-        placeholder={column.label}
+        onKeyDown={e =>
+          e.key === 'Enter' &&
+          updateColumn(node, column.id, { [toChange]: input })
+        }
+        placeholder={placeholder}
       />
       <Button
         variant='outline'
         size='icon'
         disabled={disabled}
-        onClick={() => updateColumn(node, column.id, { label: input })}
+        onClick={() => updateColumn(node, column.id, { [toChange]: input })}
       >
         <RefreshCw className='h-4 w-4' />
       </Button>

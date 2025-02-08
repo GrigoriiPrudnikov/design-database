@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function NodeColumn({ column }: Props) {
-  const { id, label, datatype: type } = column
+  const { id, label, datatype } = column
   const [hover, setHover] = useState<boolean>(false)
   const rightConnections = useAllConnections(`${id}__right`)
   const leftConnections = useAllConnections(`${id}__left`)
@@ -22,7 +22,7 @@ export function NodeColumn({ column }: Props) {
     (hover || leftConnections > 0) && rightConnections === 0
   // TODO:
   // 1. Remove 1 connection per column resctriction
-  // 2. Add invalid relations handling
+  // 2. Add invalid relations handling (ivanlid datatype, etc)
 
   return (
     <div
@@ -35,7 +35,7 @@ export function NodeColumn({ column }: Props) {
           <div className='break-all max-w-full'>{label}</div>
           <RelationTypeToggle columnId={id} />
         </div>
-        <div>{type}</div>
+        <div>{datatype}</div>
       </div>
       <div>
         <CustomHandle

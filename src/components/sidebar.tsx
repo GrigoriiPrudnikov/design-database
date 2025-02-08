@@ -24,7 +24,7 @@ export function Sidebar() {
           ))}
         </Accordion>
       </ScrollArea>
-      <div className='px-2 bg-zinc-950 border-t border-zinc-800 w-full max-w-[22.5vw] h-12 flex justify-between items-center text-sm'>
+      <div className='px-1 bg-zinc-950 border-t border-zinc-800 w-full max-w-[22.5vw] h-12 flex justify-between items-center text-sm'>
         <CreateDialog
           create={createTable}
           title='Create table'

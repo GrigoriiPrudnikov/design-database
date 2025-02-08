@@ -2,14 +2,14 @@ import { TableNode } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
 import { Column, ColumnType, Relation } from '@/types'
 import {
-  addEdge,
-  applyNodeChanges,
-  Edge,
-  OnConnect,
-  OnNodesChange,
-  OnReconnect,
-  ReactFlowProps,
-  reconnectEdge,
+    addEdge,
+    applyNodeChanges,
+    Edge,
+    OnConnect,
+    OnNodesChange,
+    OnReconnect,
+    ReactFlowProps,
+    reconnectEdge,
 } from '@xyflow/react'
 import { nanoid } from 'nanoid'
 import { create } from 'zustand'
@@ -29,6 +29,7 @@ const initialNodes: TableNode[] = [
           isRequired: true,
           isUnique: true,
           isPrimaryKey: true,
+          defaultValue: null,
         },
         {
           id: nanoid(),
@@ -37,6 +38,7 @@ const initialNodes: TableNode[] = [
           isRequired: true,
           isUnique: true,
           isPrimaryKey: false,
+          defaultValue: null,
         },
         {
           id: nanoid(),
@@ -45,6 +47,7 @@ const initialNodes: TableNode[] = [
           isRequired: false,
           isUnique: true,
           isPrimaryKey: false,
+          defaultValue: null,
         },
       ],
     },
@@ -198,6 +201,7 @@ export const useStore = create<State & Actions>()(
                   isRequired: true,
                   isUnique: false,
                   isPrimaryKey: false,
+                  defaultValue: null,
                 },
               ],
             },
@@ -273,6 +277,8 @@ export const useStore = create<State & Actions>()(
                 columns: n.data.columns.map(c => ({
                   ...c,
                   isPrimaryKey: columnId === c.id,
+                  isUnique: true,
+                  isRequired: true,
                 })),
               },
             }

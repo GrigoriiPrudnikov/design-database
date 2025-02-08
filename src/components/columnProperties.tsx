@@ -3,7 +3,13 @@
 import { Actions, State, useStore } from '@/state'
 import { Column } from '@/types'
 import { useShallow } from 'zustand/react/shallow'
-import { ChangeColumnName, DatatypeSelect, TableNode, ToggleProperty } from '.'
+import {
+    ChangeProperty,
+    DatatypeSelect,
+    DeleteColumn,
+    TableNode,
+    ToggleProperty,
+} from '.'
 import { Button, Popover, PopoverContent, PopoverTrigger } from './ui'
 
 interface Props {
@@ -14,15 +20,12 @@ interface Props {
 function selector(state: State & Actions) {
   return {
     updateColumn: state.updateColumn,
-    removeColumn: state.removeColumn,
     updatePrimaryKey: state.updatePrimaryKey,
   }
 }
 
 export function ColumnProperties({ column, node }: Props) {
-  const { updateColumn, removeColumn, updatePrimaryKey } = useStore(
-    useShallow(selector),
-  )
+  const { updateColumn, updatePrimaryKey } = useStore(useShallow(selector))
 
   function toggleProperty(property: 'isRequired' | 'isUnique') {
     updateColumn(node, column.id, {
@@ -42,7 +45,12 @@ export function ColumnProperties({ column, node }: Props) {
         align='center'
         className='flex flex-col gap-2'
       >
-        <ChangeColumnName column={column} node={node} />
+        <ChangeProperty
+          column={column}
+          node={node}
+          placeholder={column.label}
+          toChange='label'
+        />
         <div className='flex flex-col gap-2'>
           <ToggleProperty
             label='Primary Key'
@@ -54,17 +62,24 @@ export function ColumnProperties({ column, node }: Props) {
             label='Unique'
             value={column.isUnique}
             onToggle={() => toggleProperty('isUnique')}
+            disabled={column.isPrimaryKey}
           />
           <ToggleProperty
             label='Required'
             value={column.isRequired}
             onToggle={() => toggleProperty('isRequired')}
+            disabled={column.isPrimaryKey}
           />
           <DatatypeSelect column={column} node={node} />
-          {/* TODO: disabled delete button if column is primary key and add tooltip */}
-          <Button variant='ghost' onClick={() => removeColumn(node, column.id)}>
-            Delete
-          </Button>
+          {!column.isPrimaryKey && (
+            <ChangeProperty
+              column={column}
+              node={node}
+              placeholder='Default value'
+              toChange='defaultValue'
+            />
+          )}
+          <DeleteColumn column={column} node={node} />
         </div>
       </PopoverContent>
     </Popover>
