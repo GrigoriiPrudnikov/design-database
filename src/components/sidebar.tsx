@@ -26,7 +26,7 @@ export function Sidebar() {
       </ScrollArea>
       <div className='px-1 bg-zinc-950 border-t border-zinc-800 w-full max-w-[22.5vw] h-12 flex justify-between items-center text-sm'>
         <CreateDialog
-          create={createTable}
+          onCreate={createTable}
           title='Create table'
           description='Create table, where you can add, edit, and remove columns'
         />

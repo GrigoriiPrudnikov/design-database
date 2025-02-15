@@ -1,4 +1,5 @@
 export * from './canvas'
+export * from './deleteDialog'
 export * from './changeProperty'
 export * from './createDialog'
 export * from './customHandle'

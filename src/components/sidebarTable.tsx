@@ -1,7 +1,7 @@
 import { Actions, State, useStore } from '@/state'
 import { useShallow } from 'zustand/react/shallow'
-import { CreateDialog, SidebarColumn, TableNode } from '.'
-import { AccordionContent, AccordionItem, AccordionTrigger, Button } from './ui'
+import { CreateDialog, DeleteDialog, SidebarColumn, TableNode } from '.'
+import { AccordionContent, AccordionItem, AccordionTrigger } from './ui'
 
 function selector(state: State & Actions) {
   return {
@@ -34,14 +34,15 @@ export function SidebarTable({ node }: { node: TableNode }) {
           ))}
         <div className='flex justify-between items-center mt-2'>
           <CreateDialog
-            key={node.id}
             title='Create column'
-            description={`Create column in table '${node.data.label}'`}
-            create={createColumn(node)}
+            description={`Create column in ${node.data.label}`}
+            onCreate={createColumn(node)}
           />
-          <Button variant='ghost' onClick={() => removeTable(node.id)}>
-            Delete table
-          </Button>
+          <DeleteDialog
+            title='Delete table'
+            description={`Are you sure you want to delete ${node.data.label}? This action cannot be undone.`}
+            onDelete={() => removeTable(node.id)}
+          />
         </div>
       </AccordionContent>
     </AccordionItem>

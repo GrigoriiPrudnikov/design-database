@@ -4,11 +4,11 @@ import { Actions, State, useStore } from '@/state'
 import { Column } from '@/types'
 import { useShallow } from 'zustand/react/shallow'
 import {
-    ChangeProperty,
-    DatatypeSelect,
-    DeleteColumn,
-    TableNode,
-    ToggleProperty,
+  ChangeProperty,
+  DatatypeSelect,
+  DeleteColumn,
+  TableNode,
+  ToggleProperty,
 } from '.'
 import { Button, Popover, PopoverContent, PopoverTrigger } from './ui'
 

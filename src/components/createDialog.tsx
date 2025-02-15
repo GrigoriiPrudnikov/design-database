@@ -4,7 +4,6 @@ import { useState } from 'react'
 import {
   Button,
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -16,19 +15,25 @@ import {
 interface Props {
   title: string
   description: string
-  create: (label: string) => void
+  onCreate: (label: string) => void
 }
 
 // TODO:
 // 1. confirm on enter
 // 2. if column is single in table, make it primary key
 
-export function CreateDialog({ title, description, create }: Props) {
+export function CreateDialog({ title, description, onCreate }: Props) {
+  const [open, setOpen] = useState<boolean>(false)
   const [input, setInput] = useState<string>('Untitled')
   const valid = input.trim().length > 0
+  function onConfirm(): void {
+    onCreate(input)
+    setInput('Untitled')
+    setOpen(false)
+  }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant='ghost'>{title}</Button>
       </DialogTrigger>
@@ -40,20 +45,13 @@ export function CreateDialog({ title, description, create }: Props) {
         <Input
           value={input}
           onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && onConfirm()}
           placeholder='Untitled'
         />
         <div className='flex justify-end'>
-          <DialogClose asChild>
-            <Button
-              onClick={() => {
-                create(input)
-                setInput('Untitled')
-              }}
-              disabled={!valid}
-            >
-              Create
-            </Button>
-          </DialogClose>
+          <Button onClick={onConfirm} disabled={!valid}>
+            Create
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

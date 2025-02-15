@@ -21,6 +21,8 @@ function selector(state: State & Actions) {
   }
 }
 
+// TODO: add validation
+
 export function ChangeProperty({ column, node, placeholder, toChange }: Props) {
   const { updateColumn } = useStore(useShallow(selector))
   const [input, setInput] = useState<string>(column[toChange] || '')
