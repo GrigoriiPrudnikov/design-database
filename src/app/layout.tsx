@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@/components'
+import { Toaster } from '@/components/ui'
 import { ReactFlowProvider } from '@xyflow/react'
 import { Metadata } from 'next'
 import { Roboto_Mono } from 'next/font/google'
@@ -29,6 +30,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ReactFlowProvider>{children}</ReactFlowProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

@@ -2,14 +2,14 @@ import { TableNode } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
 import { Column, ColumnType, Relation } from '@/types'
 import {
-    addEdge,
-    applyNodeChanges,
-    Edge,
-    OnConnect,
-    OnNodesChange,
-    OnReconnect,
-    ReactFlowProps,
-    reconnectEdge,
+  addEdge,
+  applyNodeChanges,
+  Edge,
+  OnConnect,
+  OnNodesChange,
+  OnReconnect,
+  ReactFlowProps,
+  reconnectEdge,
 } from '@xyflow/react'
 import { nanoid } from 'nanoid'
 import { create } from 'zustand'
@@ -43,7 +43,7 @@ const initialNodes: TableNode[] = [
         {
           id: nanoid(),
           label: 'created_at',
-          datatype: ColumnType.DATETIME,
+          datatype: ColumnType.TIMESTAMP,
           isRequired: false,
           isUnique: true,
           isPrimaryKey: false,

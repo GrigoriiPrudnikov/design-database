@@ -1,9 +1,11 @@
 'use client'
 
+import { validateDefaultValue } from '@/helpers'
 import { Actions, State, useStore } from '@/state'
 import { Column } from '@/types'
 import { RefreshCw } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 import { TableNode } from '.'
 import { Button, Input } from './ui'
@@ -21,29 +23,41 @@ function selector(state: State & Actions) {
   }
 }
 
-// TODO: add validation
-
 export function ChangeProperty({ column, node, placeholder, toChange }: Props) {
   const { updateColumn } = useStore(useShallow(selector))
   const [input, setInput] = useState<string>(column[toChange] || '')
   const disabled = input.trim() === column[toChange]
+
+  function onConfirm() {
+    let valid = true
+    let error = ''
+
+    if (toChange === 'defaultValue') {
+      const validationResult = validateDefaultValue(input, column.datatype)
+      valid = validationResult.valid
+      error = validationResult.error || ''
+    }
+
+    if (!valid) {
+      return toast.error(error)
+    }
+
+    updateColumn(node, column.id, { [toChange]: input })
+  }
 
   return (
     <div className='flex items-center gap-2'>
       <Input
         value={input}
         onChange={e => setInput(e.target.value)}
-        onKeyDown={e =>
-          e.key === 'Enter' &&
-          updateColumn(node, column.id, { [toChange]: input })
-        }
+        onKeyDown={e => e.key === 'Enter' && onConfirm()}
         placeholder={placeholder}
       />
       <Button
         variant='outline'
         size='icon'
         disabled={disabled}
-        onClick={() => updateColumn(node, column.id, { [toChange]: input })}
+        onClick={() => onConfirm()}
       >
         <RefreshCw className='h-4 w-4' />
       </Button>
