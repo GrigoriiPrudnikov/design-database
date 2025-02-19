@@ -4,7 +4,7 @@ import { validateDefaultValue } from '@/helpers'
 import { Actions, State, useStore } from '@/state'
 import { Column } from '@/types'
 import { RefreshCw } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 import { TableNode } from '.'
@@ -28,6 +28,10 @@ export function ChangeProperty({ column, node, placeholder, toChange }: Props) {
   const [input, setInput] = useState<string>(column[toChange] || '')
   const disabled = input.trim() === column[toChange]
 
+  useEffect(() => {
+    setInput('')
+  }, [column.datatype])
+
   function onConfirm() {
     let valid = true
     let error = ''
@@ -38,7 +42,7 @@ export function ChangeProperty({ column, node, placeholder, toChange }: Props) {
       error = validationResult.error || ''
     }
 
-    if (!valid) {
+    if (!valid && input.trim() !== '') {
       return toast.error(error)
     }
 

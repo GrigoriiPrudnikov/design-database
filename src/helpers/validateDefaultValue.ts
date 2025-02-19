@@ -94,7 +94,7 @@ function validateDate(value: string): ValidationResult {
 }
 
 function validateTime(value: string): ValidationResult {
-  if (!validator.isTime(value))
+  if (!validator.isTime(value, { mode: 'withSeconds' }))
     return {
       valid: false,
       error: 'Invalid time format HH:MM:SS.',
@@ -111,7 +111,7 @@ function validateTimestamp(value: string): ValidationResult {
       error: 'Invalid date format YYYY-MM-DD.',
     }
 
-  if (!time || !validator.isTime(time))
+  if (!time || !validator.isTime(time, { mode: 'withSeconds' }))
     return {
       valid: false,
       error: 'Invalid time format HH:MM:SS.',

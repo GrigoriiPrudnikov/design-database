@@ -29,7 +29,7 @@ const initialNodes: TableNode[] = [
           isRequired: true,
           isUnique: true,
           isPrimaryKey: true,
-          defaultValue: null,
+          defaultValue: '',
         },
         {
           id: nanoid(),
@@ -38,7 +38,7 @@ const initialNodes: TableNode[] = [
           isRequired: true,
           isUnique: true,
           isPrimaryKey: false,
-          defaultValue: null,
+          defaultValue: '',
         },
         {
           id: nanoid(),
@@ -47,7 +47,7 @@ const initialNodes: TableNode[] = [
           isRequired: false,
           isUnique: true,
           isPrimaryKey: false,
-          defaultValue: null,
+          defaultValue: '',
         },
       ],
     },
@@ -201,7 +201,7 @@ export const useStore = create<State & Actions>()(
                   isRequired: true,
                   isUnique: false,
                   isPrimaryKey: false,
-                  defaultValue: null,
+                  defaultValue: '',
                 },
               ],
             },
@@ -220,6 +220,10 @@ export const useStore = create<State & Actions>()(
             ...node.data,
             columns: node.data.columns.map(c => {
               if (c.id !== id) return c
+
+              if (changes.datatype) {
+                changes = { ...changes, defaultValue: '' }
+              }
 
               return {
                 ...c,

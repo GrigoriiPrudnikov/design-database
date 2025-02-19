@@ -5,7 +5,7 @@ export interface Column {
   isRequired: boolean
   isUnique: boolean
   isPrimaryKey: boolean
-  defaultValue: string | null
+  defaultValue: string
 }
 
 export enum ColumnType {
