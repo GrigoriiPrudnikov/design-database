@@ -34,7 +34,7 @@ export function validateDefaultValue(
     [ColumnType.BYTEA]: validateBytea(value),
     [ColumnType.JSON]: validateJson(value),
     [ColumnType.UUID]: validateUUID(value),
-    [ColumnType.XML]: { valid: false, error: 'Unsupported column type (yet)' },
+    //[ColumnType.XML]: { valid: false, error: 'Unsupported column type (yet)' },
   }
   return valid[datatype] || { valid: false, error: 'Unsupported column type' }
 }

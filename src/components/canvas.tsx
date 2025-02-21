@@ -26,7 +26,7 @@ const defaultEdgeOptions: Partial<Edge> = {
 
 function selector(state: State & Actions) {
   return {
-    nodes: state.nodes,
+    tables: state.tables,
     edges: state.edges,
     onNodesChange: state.onNodesChange,
     onConnect: state.onConnect,
@@ -39,7 +39,7 @@ function selector(state: State & Actions) {
 export function Canvas() {
   const [isMounted, setIsMounted] = useState(false)
   const {
-    nodes,
+    tables,
     edges,
     onNodesChange,
     onConnect,
@@ -60,7 +60,7 @@ export function Canvas() {
       <ReactFlow
         className='h-full w-full text-white !bg-zinc-950 z-50'
         colorMode='dark'
-        nodes={nodes}
+        nodes={tables}
         edges={edges}
         onNodesChange={onNodesChange}
         onConnect={onConnect}

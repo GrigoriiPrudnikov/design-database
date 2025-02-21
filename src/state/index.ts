@@ -1,4 +1,4 @@
-import { TableNode } from '@/components'
+import { Table } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
 import { Column, ColumnType, Relation } from '@/types'
 import {
@@ -15,86 +15,57 @@ import { nanoid } from 'nanoid'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-const initialNodes: TableNode[] = [
+const initialNodes: Table[] = [
   {
     id: '1',
     position: { x: 500, y: 400 },
-    data: {
-      label: 'Node 1',
-      columns: [
-        {
-          id: nanoid(),
-          label: 'id',
-          datatype: ColumnType.INT,
-          isRequired: true,
-          isUnique: true,
-          isPrimaryKey: true,
-          defaultValue: '',
-        },
-        {
-          id: nanoid(),
-          label: 'name',
-          datatype: ColumnType.VARCHAR,
-          isRequired: true,
-          isUnique: true,
-          isPrimaryKey: false,
-          defaultValue: '',
-        },
-        {
-          id: nanoid(),
-          label: 'created_at',
-          datatype: ColumnType.TIMESTAMP,
-          isRequired: false,
-          isUnique: true,
-          isPrimaryKey: false,
-          defaultValue: '',
-        },
-      ],
-    },
+    data: { label: 'Node 1' },
     draggable: true,
     type: 'table',
   },
   {
     id: '12',
     position: { x: 300, y: 400 },
-    data: { label: 'Node 2', columns: [] },
+    data: { label: 'Node 2' },
     draggable: true,
     type: 'table',
   },
 ]
 
 export interface State {
-  nodes: TableNode[]
+  tables: Table[]
+  columns: Column[]
   edges: Edge[]
   relations: Relation[]
   edgeReconnectSuccessful: boolean
 }
 
 export interface Actions {
-  onNodesChange: OnNodesChange<TableNode>
+  onNodesChange: OnNodesChange<Table>
   onConnect: OnConnect
   onReconnect: OnReconnect
   onReconnectStart: ReactFlowProps['onReconnectStart']
   onReconnectEnd: ReactFlowProps['onReconnectEnd']
   createTable: (label: string) => void
   removeTable: (id: string) => void
-  createColumn: (node: TableNode) => (label: string) => void
-  updateColumn: (node: TableNode, id: string, changes: Partial<Column>) => void
-  removeColumn: (node: TableNode, id: string) => void
+  createColumn: (tableId: string) => (label: string) => void
+  updateColumn: (id: string, changes: Partial<Column>) => void
+  removeColumn: (id: string) => void
   changeRelationType: (id: string, toChange: 'target' | 'source') => void
-  updatePrimaryKey: (node: TableNode, columnId: string) => void
+  setPrimaryKey: (columnId: string) => void
 }
 
 export const useStore = create<State & Actions>()(
   persist(
     (set, get) => ({
-      nodes: initialNodes,
+      tables: initialNodes,
+      columns: [],
       edges: [],
       relations: [],
       edgeReconnectSuccessful: true,
       onNodesChange: changes => {
         set({
-          nodes: applyNodeChanges(changes, get().nodes),
+          tables: applyNodeChanges(changes, get().tables),
         })
       },
       onConnect: connection => {
@@ -138,7 +109,7 @@ export const useStore = create<State & Actions>()(
               ...rel,
               target: newConnection.targetHandle?.split('__')[0]!,
             }
-          })!,
+          }),
         })
       },
       onReconnectStart: () => set({ edgeReconnectSuccessful: false }),
@@ -155,105 +126,71 @@ export const useStore = create<State & Actions>()(
         })
       },
       createTable: label => {
-        const nodes = get().nodes
-        const found = nodes.find(n => n.data.label === toSnakeCase(label))
+        const tables = get().tables
+        const found = tables.find(r => r.data.label === toSnakeCase(label))
         if (found) return
 
-        const newNode: TableNode = {
+        const newTable: Table = {
           id: nanoid(),
           type: 'table',
-          position: calcNodePosition(nodes),
+          position: calcNodePosition(tables),
           data: {
             label: toSnakeCase(label),
-            columns: [],
           },
+        }
+        const defaultColumn: Column = {
+          id: nanoid(),
+          label: 'id',
+          tableId: newTable.id,
+          datatype: ColumnType.SERIAL,
+          isPrimaryKey: true,
+          isRequired: true,
+          isUnique: true,
+          defaultValue: '',
         }
 
         set({
-          nodes: [...nodes, newNode].sort((a, b) =>
+          tables: [...tables, newTable].sort((a, b) =>
             a.data.label.localeCompare(b.data.label),
           ),
+          columns: [...get().columns, defaultColumn],
         })
       },
       removeTable: id => {
         set({
-          nodes: get().nodes.filter(n => n.id !== id),
+          tables: get().tables.filter(t => t.id !== id),
           edges: get().edges.filter(ed => ed.target !== id && ed.source !== id),
         })
       },
-      createColumn: node => {
+      createColumn: tableId => {
         return label => {
-          const found = node.data.columns.find(
-            c => c.label === toSnakeCase(label),
-          )
+          const found = get().columns.find(c => c.label === toSnakeCase(label))
           if (found) return
 
-          const updates: TableNode = {
-            ...node,
-            data: {
-              ...node.data,
-              columns: [
-                ...node.data.columns,
-                {
-                  label: toSnakeCase(label),
-                  id: nanoid(),
-                  datatype: ColumnType.INT,
-                  isRequired: true,
-                  isUnique: false,
-                  isPrimaryKey: false,
-                  defaultValue: '',
-                },
-              ],
-            },
+          const newColumn: Column = {
+            id: nanoid(),
+            label: toSnakeCase(label),
+            tableId,
+            datatype: ColumnType.INT,
+            isRequired: true,
+            isUnique: false,
+            isPrimaryKey: false,
+            defaultValue: '',
           }
-          set({
-            nodes: [...get().nodes.filter(n => n.id != node.id), updates].sort(
-              (a, b) => a.data.label.localeCompare(b.data.label),
-            ),
-          })
+
+          set({ columns: [...get().columns, newColumn] })
         }
       },
-      updateColumn: (node, id, changes) => {
-        const updates = {
-          ...node,
-          data: {
-            ...node.data,
-            columns: node.data.columns.map(c => {
-              if (c.id !== id) return c
-
-              if (changes.datatype) {
-                changes = { ...changes, defaultValue: '' }
-              }
-
-              return {
-                ...c,
-                ...changes,
-              }
-            }),
-          },
-        }
-
+      updateColumn: (id, changes) => {
         set({
-          nodes: get().nodes.map(n => {
-            if (n.id === node.id) return updates
-            return n
+          columns: get().columns.map(c => {
+            if (c.id === id) return { ...c, ...changes }
+            return c
           }),
         })
       },
-      removeColumn: (node, id) => {
-        const updates = {
-          ...node,
-          data: {
-            ...node.data,
-            columns: node.data.columns.filter(c => c.id !== id),
-          },
-        }
-        set({
-          nodes: get().nodes.map(n => {
-            if (n.id === node.id) return updates
-            return n
-          }),
-        })
+      removeColumn: id => {
+        set({ columns: get().columns.filter(c => c.id !== id) })
       },
       changeRelationType: (id, toChange) => {
         set({
@@ -270,21 +207,25 @@ export const useStore = create<State & Actions>()(
           }),
         })
       },
-      updatePrimaryKey: (node, columnId) => {
+      setPrimaryKey: columnId => {
+        const found = get().columns.find(c => c.id === columnId)
+        if (!found) return
+
         set({
-          nodes: get().nodes.map(n => {
-            if (n.id !== node.id) return n
+          columns: get().columns.map(c => {
+            if (c.tableId !== found.tableId) return c
+
+            if (c.id !== columnId)
+              return {
+                ...c,
+                isPrimaryKey: false,
+              }
+
             return {
-              ...n,
-              data: {
-                ...n.data,
-                columns: n.data.columns.map(c => ({
-                  ...c,
-                  isPrimaryKey: columnId === c.id,
-                  isUnique: true,
-                  isRequired: true,
-                })),
-              },
+              ...c,
+              isPrimaryKey: true,
+              isUnique: true,
+              isRequired: true,
             }
           }),
         })

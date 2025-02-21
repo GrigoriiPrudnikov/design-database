@@ -2,15 +2,13 @@
 
 import { Column } from '@/types'
 import { ColumnProperties } from './columnProperties'
-import { TableNode } from './table'
 
 interface Props {
   index: number
   column: Column
-  node: TableNode
 }
 
-export function SidebarColumn({ index, column, node }: Props) {
+export function SidebarColumn({ index, column }: Props) {
   if (!column) return null
 
   return (
@@ -22,7 +20,7 @@ export function SidebarColumn({ index, column, node }: Props) {
           <span className='text-zinc-400'>{column.isPrimaryKey && 'PK'}</span>
         </div>
       </div>
-      <ColumnProperties column={column} node={node} />
+      <ColumnProperties column={column} />
     </div>
   )
 }

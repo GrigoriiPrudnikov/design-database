@@ -3,32 +3,25 @@
 import { Actions, State, useStore } from '@/state'
 import { Column } from '@/types'
 import { useShallow } from 'zustand/react/shallow'
-import {
-  ChangeProperty,
-  DatatypeSelect,
-  DeleteColumn,
-  TableNode,
-  ToggleProperty,
-} from '.'
+import { ChangeProperty, DatatypeSelect, DeleteColumn, ToggleProperty } from '.'
 import { Button, Popover, PopoverContent, PopoverTrigger } from './ui'
 
 interface Props {
   column: Column
-  node: TableNode
 }
 
 function selector(state: State & Actions) {
   return {
     updateColumn: state.updateColumn,
-    updatePrimaryKey: state.updatePrimaryKey,
+    updatePrimaryKey: state.setPrimaryKey,
   }
 }
 
-export function ColumnProperties({ column, node }: Props) {
+export function ColumnProperties({ column }: Props) {
   const { updateColumn, updatePrimaryKey } = useStore(useShallow(selector))
 
   function toggleProperty(property: 'isRequired' | 'isUnique') {
-    updateColumn(node, column.id, {
+    updateColumn(column.id, {
       [property]: !column[property],
     })
   }
@@ -47,7 +40,6 @@ export function ColumnProperties({ column, node }: Props) {
       >
         <ChangeProperty
           column={column}
-          node={node}
           placeholder={column.label}
           toChange='label'
         />
@@ -55,7 +47,7 @@ export function ColumnProperties({ column, node }: Props) {
           <ToggleProperty
             label='Primary Key'
             value={column.isPrimaryKey}
-            onToggle={() => updatePrimaryKey(node, column.id)}
+            onToggle={() => updatePrimaryKey(column.id)}
             disabled={column.isPrimaryKey}
           />
           <ToggleProperty
@@ -70,16 +62,15 @@ export function ColumnProperties({ column, node }: Props) {
             onToggle={() => toggleProperty('isRequired')}
             disabled={column.isPrimaryKey}
           />
-          <DatatypeSelect column={column} node={node} />
+          <DatatypeSelect column={column} />
           {!column.isPrimaryKey && (
             <ChangeProperty
               column={column}
-              node={node}
               placeholder='Default value'
               toChange='defaultValue'
             />
           )}
-          <DeleteColumn column={column} node={node} />
+          <DeleteColumn column={column} />
         </div>
       </PopoverContent>
     </Popover>

@@ -7,12 +7,10 @@ import { RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
-import { TableNode } from '.'
 import { Button, Input } from './ui'
 
 interface Props {
   column: Column
-  node: TableNode
   placeholder: string
   toChange: 'label' | 'defaultValue'
 }
@@ -23,13 +21,13 @@ function selector(state: State & Actions) {
   }
 }
 
-export function ChangeProperty({ column, node, placeholder, toChange }: Props) {
+export function ChangeProperty({ column, placeholder, toChange }: Props) {
   const { updateColumn } = useStore(useShallow(selector))
-  const [input, setInput] = useState<string>(column[toChange] || '')
-  const disabled = input.trim() === column[toChange]
+  const [input, setInput] = useState<string>(column[toChange])
+  const disabled = input.trim() === column[toChange] || input.trim() === ''
 
   useEffect(() => {
-    setInput('')
+    setInput(column[toChange])
   }, [column.datatype])
 
   function onConfirm() {
@@ -46,7 +44,7 @@ export function ChangeProperty({ column, node, placeholder, toChange }: Props) {
       return toast.error(error)
     }
 
-    updateColumn(node, column.id, { [toChange]: input })
+    updateColumn(column.id, { [toChange]: input })
   }
 
   return (

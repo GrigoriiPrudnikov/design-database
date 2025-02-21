@@ -2,25 +2,32 @@
 
 import { Accordion, Button, ScrollArea } from '@/components/ui'
 import { Actions, State, useStore } from '@/state'
+import { useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { CreateDialog, SidebarTable } from '.'
+import { createQuery } from '@/helpers'
 
 function selector(state: State & Actions) {
   return {
-    nodes: state.nodes,
+    tables: state.tables,
+    columns: state.columns,
     createTable: state.createTable,
   }
 }
 
 export function Sidebar() {
-  const { nodes, createTable } = useStore(useShallow(selector))
+  const { tables, columns, createTable } = useStore(useShallow(selector))
+  const sortedTables = useMemo(
+    () => tables.sort((a, b) => a.data.label.localeCompare(b.data.label)),
+    [tables],
+  )
 
   return (
     <div className='bg-zinc-950 h-screen max-w-[22.5vw] border-r border-zinc-800 flex flex-col z-10'>
       <ScrollArea className='h-full'>
         <Accordion type='multiple' className='w-full'>
-          {nodes.map(n => (
-            <SidebarTable key={n.id} node={n} />
+          {sortedTables.map(t => (
+            <SidebarTable key={t.id} table={t} />
           ))}
         </Accordion>
       </ScrollArea>
@@ -30,7 +37,7 @@ export function Sidebar() {
           title='Create table'
           description='Create table, where you can add, edit, and remove columns'
         />
-        <Button variant='ghost'>Export query</Button>
+        <Button variant='ghost' onClick={() => console.log(createQuery({ tables, columns, relations: [] }))}>Export query</Button>
       </div>
     </div>
   )

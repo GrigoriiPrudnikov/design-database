@@ -1,7 +1,6 @@
 import { Actions, State, useStore } from '@/state'
 import { Column, ColumnType } from '@/types'
 import { useShallow } from 'zustand/react/shallow'
-import { TableNode } from '.'
 import {
   Select,
   SelectContent,
@@ -12,7 +11,6 @@ import {
 
 interface Props {
   column: Column
-  node: TableNode
 }
 
 const DATA_TYPES = Object.values(ColumnType) as string[]
@@ -23,7 +21,7 @@ function selector(state: State & Actions) {
   }
 }
 
-export function DatatypeSelect({ column, node }: Props) {
+export function DatatypeSelect({ column }: Props) {
   const { updateColumn } = useStore(useShallow(selector))
 
   return (
@@ -31,7 +29,7 @@ export function DatatypeSelect({ column, node }: Props) {
       <Select
         defaultValue={column.datatype}
         onValueChange={(datatype: ColumnType) =>
-          updateColumn(node, column.id, { datatype })
+          updateColumn(column.id, { datatype })
         }
       >
         <SelectTrigger className='bg-zinc-950 w-fit'>

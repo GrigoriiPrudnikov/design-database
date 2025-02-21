@@ -1,6 +1,7 @@
 export interface Column {
   id: string
   label: string
+  tableId: string
   datatype: ColumnType
   isRequired: boolean
   isUnique: boolean
@@ -24,6 +25,9 @@ export enum ColumnType {
   BYTEA = 'bytea',
   JSON = 'json',
   UUID = 'uuid',
-  XML = 'xml',
-  DECIMAL = 'decimal',
+  //XML = 'xml',
+  //DECIMAL = 'decimal',
+  SERIAL = 'serial',
+  SMALLSERIAL = 'smallserial',
+  BIGSERIAL = 'bigserial',
 }
