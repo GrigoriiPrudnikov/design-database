@@ -37,7 +37,14 @@ export function Sidebar() {
           title='Create table'
           description='Create table, where you can add, edit, and remove columns'
         />
-        <Button variant='ghost' onClick={() => console.log(createQuery({ tables, columns, relations: [] }))}>Export query</Button>
+        <Button
+          variant='ghost'
+          onClick={() =>
+            console.log(createQuery({ tables, columns, relations: [] }))
+          }
+        >
+          Export query
+        </Button>
       </div>
     </div>
   )

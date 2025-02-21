@@ -16,9 +16,16 @@ export function createQuery({ tables, columns, relations }: Params): string {
     columns
       .filter(c => c.tableId === table.id)
       .forEach(column => {
-        query.push(
-          `  ${column.label} ${column.datatype.toUpperCase()} ${column.isRequired && 'NOT NULL'} ${'DEFAULT ' + getDefaultValue(column)}`,
-        )
+        let line = `  ${column.label} ${column.datatype.toUpperCase()}`
+
+        if (column.isPrimaryKey) {
+          line += ' PRIMARY KEY'
+          query.push(line)
+          return
+        }
+
+        line += ` ${column.isRequired && 'NOT NULL'} ${'DEFAULT ' + getDefaultValue(column)}`
+        query.push(line)
       })
 
     query.push(');')
