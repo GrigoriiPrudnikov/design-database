@@ -5,6 +5,7 @@ import { Column } from '@/types'
 import { useShallow } from 'zustand/react/shallow'
 import { ChangeProperty, DatatypeSelect, DeleteColumn, ToggleProperty } from '.'
 import { Button, Popover, PopoverContent, PopoverTrigger } from './ui'
+import { hasLimit } from '@/constants'
 
 interface Props {
   column: Column
@@ -20,7 +21,7 @@ function selector(state: State & Actions) {
 export function ColumnProperties({ column }: Props) {
   const { updateColumn, updatePrimaryKey } = useStore(useShallow(selector))
 
-  function toggleProperty(property: 'isRequired' | 'isUnique') {
+  function toggleProperty(property: 'isRequired' | 'isUnique' | 'isArray') {
     updateColumn(column.id, {
       [property]: !column[property],
     })
@@ -62,7 +63,20 @@ export function ColumnProperties({ column }: Props) {
             onToggle={() => toggleProperty('isRequired')}
             disabled={column.isPrimaryKey}
           />
+          <ToggleProperty
+            label='Array'
+            value={column.isArray}
+            onToggle={() => toggleProperty('isArray')}
+            disabled={column.isPrimaryKey}
+          />
           <DatatypeSelect column={column} />
+          {hasLimit.includes(column.datatype) && (
+            <ChangeProperty
+              column={column}
+              placeholder='Limit'
+              toChange='limit'
+            />
+          )}
           {!column.isPrimaryKey && (
             <ChangeProperty
               column={column}

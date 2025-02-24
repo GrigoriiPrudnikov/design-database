@@ -1,5 +1,5 @@
 import { Table } from '@/components'
-import { Column, ColumnType, Relation } from '@/types'
+import { Column, Datatype, Relation } from '@/types'
 
 interface Params {
   tables: Table[]
@@ -7,6 +7,7 @@ interface Params {
   relations: Relation[]
 }
 
+// Only for Postgresql at the moment
 export function createQuery({ tables, columns, relations }: Params): string {
   let query: string[] = []
 
@@ -16,15 +17,29 @@ export function createQuery({ tables, columns, relations }: Params): string {
     columns
       .filter(c => c.tableId === table.id)
       .forEach(column => {
-        let line = `  ${column.label} ${column.datatype.toUpperCase()}`
+        const {
+          label,
+          datatype,
+          isPrimaryKey,
+          isRequired,
+          isUnique,
+          isArray,
+          limit,
+          defaultValue,
+        } = column
 
-        if (column.isPrimaryKey) {
+        let line = `  ${label} ${datatype.toUpperCase()}${limit && `(${limit})`}`
+
+        if (isPrimaryKey) {
           line += ' PRIMARY KEY'
           query.push(line)
           return
         }
 
-        line += ` ${column.isRequired && 'NOT NULL'} ${'DEFAULT ' + getDefaultValue(column)}`
+        if (isRequired) line += ' NOT NULL'
+        if (isUnique) line += ' UNIQUE'
+        if (defaultValue !== '') line += ` DEFAULT ${getDefaultValue(column)}`
+
         query.push(line)
       })
 
@@ -37,32 +52,20 @@ export function createQuery({ tables, columns, relations }: Params): string {
 function getDefaultValue(column: Column): string {
   const { defaultValue, datatype } = column
 
-  if (column.defaultValue === '') {
-    return ''
+  if (!defaultValue) return ''
+
+  if (datatype === Datatype.BIT || datatype === Datatype.VARBIT) {
+    return "B'" + defaultValue + "'"
   }
 
-  const defaultValues = {
-    [ColumnType.INT]: defaultValue,
-    [ColumnType.SMALLINT]: defaultValue,
-    [ColumnType.BIGINT]: defaultValue,
-    [ColumnType.FLOAT]: defaultValue,
-    [ColumnType.DOUBLE]: defaultValue,
-    [ColumnType.CHAR]: `'${defaultValue}'`,
-    [ColumnType.VARCHAR]: `'${defaultValue}'`,
-    [ColumnType.TEXT]: `'${defaultValue}'`,
-    [ColumnType.DATE]: defaultValue,
-    [ColumnType.TIME]: defaultValue,
-    [ColumnType.TIMESTAMP]: `'${defaultValue}'`,
-    [ColumnType.BOOLEAN]: defaultValue,
-    [ColumnType.BYTEA]: `'${defaultValue}'`,
-    [ColumnType.JSON]: `'${defaultValue}'`,
-    [ColumnType.UUID]: `'${defaultValue}'`,
-    //[ColumnType.XML]: `'${defaultValue}'`,
-    //[ColumnType.DECIMAL]: defaultValue,
-    [ColumnType.SERIAL]: defaultValue,
-    [ColumnType.SMALLSERIAL]: defaultValue,
-    [ColumnType.BIGSERIAL]: defaultValue,
-  }
+  const needParens: Datatype[] = [
+    Datatype.CHAR,
+    Datatype.VARCHAR,
+    Datatype.TEXT,
+    Datatype.JSON,
+    Datatype.UUID,
+  ]
+  if (needParens.includes(datatype)) return "'" + defaultValue + "'"
 
-  return defaultValues[datatype]
+  return defaultValue
 }

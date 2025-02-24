@@ -2,10 +2,10 @@ import { ThemeProvider } from '@/components'
 import { Toaster } from '@/components/ui'
 import { ReactFlowProvider } from '@xyflow/react'
 import { Metadata } from 'next'
-import { Roboto_Mono } from 'next/font/google'
+import { Rubik } from 'next/font/google'
 import './globals.css'
 
-const robotoMono = Roboto_Mono({
+const rubik = Rubik({
   subsets: ['latin'],
   weight: ['400'],
 })
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' className='dark' suppressHydrationWarning>
-      <body className={`${robotoMono.className} antialiased h-screen w-screen`}>
+      <body className={`${rubik.className} antialiased h-screen w-screen`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='dark'

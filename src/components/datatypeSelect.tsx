@@ -1,5 +1,5 @@
 import { Actions, State, useStore } from '@/state'
-import { Column, ColumnType } from '@/types'
+import { Column, Datatype } from '@/types'
 import { useShallow } from 'zustand/react/shallow'
 import {
   Select,
@@ -13,7 +13,7 @@ interface Props {
   column: Column
 }
 
-const DATA_TYPES = Object.values(ColumnType) as string[]
+const DATA_TYPES = Object.values(Datatype) as string[]
 
 function selector(state: State & Actions) {
   return {
@@ -28,7 +28,7 @@ export function DatatypeSelect({ column }: Props) {
     <div className='flex justify-between items-center gap-2'>
       <Select
         defaultValue={column.datatype}
-        onValueChange={(datatype: ColumnType) =>
+        onValueChange={(datatype: Datatype) =>
           updateColumn(column.id, { datatype })
         }
       >

@@ -1,6 +1,6 @@
 import { Table } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
-import { Column, ColumnType, Relation } from '@/types'
+import { Column, Datatype, Relation } from '@/types'
 import {
   addEdge,
   applyNodeChanges,
@@ -14,23 +14,6 @@ import {
 import { nanoid } from 'nanoid'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-const initialNodes: Table[] = [
-  {
-    id: '1',
-    position: { x: 500, y: 400 },
-    data: { label: 'Node 1' },
-    draggable: true,
-    type: 'table',
-  },
-  {
-    id: '12',
-    position: { x: 300, y: 400 },
-    data: { label: 'Node 2' },
-    draggable: true,
-    type: 'table',
-  },
-]
 
 export interface State {
   tables: Table[]
@@ -58,7 +41,7 @@ export interface Actions {
 export const useStore = create<State & Actions>()(
   persist(
     (set, get) => ({
-      tables: initialNodes,
+      tables: [],
       columns: [],
       edges: [],
       relations: [],
@@ -142,10 +125,12 @@ export const useStore = create<State & Actions>()(
           id: nanoid(),
           label: 'id',
           tableId: newTable.id,
-          datatype: ColumnType.SERIAL,
+          datatype: Datatype.SERIAL,
           isPrimaryKey: true,
           isRequired: true,
           isUnique: true,
+          isArray: false,
+          limit: '',
           defaultValue: '',
         }
 
@@ -171,10 +156,12 @@ export const useStore = create<State & Actions>()(
             id: nanoid(),
             label: toSnakeCase(label),
             tableId,
-            datatype: ColumnType.INT,
+            datatype: Datatype.INT,
             isRequired: true,
             isUnique: false,
             isPrimaryKey: false,
+            isArray: false,
+            limit: '',
             defaultValue: '',
           }
 
@@ -226,6 +213,7 @@ export const useStore = create<State & Actions>()(
               isPrimaryKey: true,
               isUnique: true,
               isRequired: true,
+              isArray: false,
             }
           }),
         })

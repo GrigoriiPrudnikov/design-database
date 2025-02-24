@@ -6,13 +6,14 @@ import { Column } from '@/types'
 import { RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import validator from 'validator'
 import { useShallow } from 'zustand/react/shallow'
 import { Button, Input } from './ui'
 
 interface Props {
   column: Column
   placeholder: string
-  toChange: 'label' | 'defaultValue'
+  toChange: 'label' | 'defaultValue' | 'limit'
 }
 
 function selector(state: State & Actions) {
@@ -23,11 +24,11 @@ function selector(state: State & Actions) {
 
 export function ChangeProperty({ column, placeholder, toChange }: Props) {
   const { updateColumn } = useStore(useShallow(selector))
-  const [input, setInput] = useState<string>(column[toChange])
+  const [input, setInput] = useState<string>(column[toChange] || '')
   const disabled = input.trim() === column[toChange] || input.trim() === ''
 
   useEffect(() => {
-    setInput(column[toChange])
+    setInput(column[toChange] || '')
   }, [column.datatype])
 
   function onConfirm() {
@@ -38,6 +39,10 @@ export function ChangeProperty({ column, placeholder, toChange }: Props) {
       const validationResult = validateDefaultValue(input, column.datatype)
       valid = validationResult.valid
       error = validationResult.error || ''
+    }
+    if (toChange === 'limit' && !validator.isInt(input)) {
+      valid = false
+      error = 'Limit must be an integer'
     }
 
     if (!valid && input.trim() !== '') {

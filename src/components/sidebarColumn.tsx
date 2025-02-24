@@ -1,7 +1,14 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { Column } from '@/types'
+import { JetBrains_Mono } from 'next/font/google'
 import { ColumnProperties } from './columnProperties'
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400'],
+})
 
 interface Props {
   index: number
@@ -13,7 +20,12 @@ export function SidebarColumn({ index, column }: Props) {
 
   return (
     <div className='flex justify-between items-center gap-2 min-h-10'>
-      <div className='flex justify-start items-center gap-2'>
+      <div
+        className={cn(
+          jetbrainsMono.className,
+          'flex justify-start items-center gap-2',
+        )}
+      >
         <div className='text-zinc-400 w-2'>{index}</div>
         <div className='text-white break-all max-w-full'>
           {column.label}{' '}

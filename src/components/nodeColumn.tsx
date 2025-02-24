@@ -1,17 +1,24 @@
 'use client'
 
 import { useAllConnections } from '@/hooks'
+import { cn } from '@/lib/utils'
 import { Column } from '@/types'
 import { Position } from '@xyflow/react'
+import { JetBrains_Mono } from 'next/font/google'
 import { useState } from 'react'
 import { CustomHandle, RelationTypeToggle } from '.'
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400'],
+})
 
 interface Props {
   column: Column
 }
 
 export function NodeColumn({ column }: Props) {
-  const { id, label, datatype } = column
+  const { id, label, datatype, isArray, limit } = column
   const [hover, setHover] = useState<boolean>(false)
   const rightConnections = useAllConnections(`${id}__right`)
   const leftConnections = useAllConnections(`${id}__left`)
@@ -26,8 +33,7 @@ export function NodeColumn({ column }: Props) {
 
   return (
     <div
-      className='px-2 py-1 relative'
-      onMouseEnter={() => setHover(true)}
+      className={cn(jetbrainsMono.className, 'px-2 py-1 relative')}
       onMouseLeave={() => setHover(false)}
     >
       <div className='flex justify-between items-center gap-4'>
@@ -35,7 +41,11 @@ export function NodeColumn({ column }: Props) {
           <div className='break-all max-w-full'>{label}</div>
           <RelationTypeToggle columnId={id} />
         </div>
-        <div>{datatype}</div>
+        <div>
+          {datatype}
+          {limit && `(${limit})`}
+          {isArray && '[]'}
+        </div>
       </div>
       <div>
         <CustomHandle

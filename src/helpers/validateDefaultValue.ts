@@ -1,4 +1,4 @@
-import { ColumnType } from '@/types'
+import { Datatype } from '@/types'
 import validator from 'validator'
 
 interface ValidationResult {
@@ -7,7 +7,7 @@ interface ValidationResult {
 }
 
 type Validations = {
-  [key in ColumnType]?: ValidationResult
+  [key in Datatype]?: ValidationResult
 }
 
 const INT_MAX = 2_147_483_648
@@ -16,24 +16,25 @@ const BIGINT_MAX = Number(9_223_372_036_854_775_807n)
 
 export function validateDefaultValue(
   value: string,
-  datatype: ColumnType,
+  datatype: Datatype,
 ): ValidationResult {
   const valid: Validations = {
-    [ColumnType.INT]: validateInt(value, INT_MAX),
-    [ColumnType.SMALLINT]: validateInt(value, SMALLINT_MAX),
-    [ColumnType.BIGINT]: validateInt(value, BIGINT_MAX),
-    [ColumnType.FLOAT]: validateFloat(value, 7),
-    [ColumnType.DOUBLE]: validateFloat(value, 15),
-    [ColumnType.CHAR]: validateChar(value, 1),
-    [ColumnType.VARCHAR]: validateChar(value, 255),
-    [ColumnType.TEXT]: { valid: true },
-    [ColumnType.DATE]: validateDate(value),
-    [ColumnType.TIME]: validateTime(value),
-    [ColumnType.TIMESTAMP]: validateTimestamp(value),
-    [ColumnType.BOOLEAN]: validateBoolean(value),
-    [ColumnType.BYTEA]: validateBytea(value),
-    [ColumnType.JSON]: validateJson(value),
-    [ColumnType.UUID]: validateUUID(value),
+    [Datatype.INT]: validateInt(value, INT_MAX),
+    [Datatype.SMALLINT]: validateInt(value, SMALLINT_MAX),
+    [Datatype.BIGINT]: validateInt(value, BIGINT_MAX),
+    [Datatype.FLOAT]: validateFloat(value, 7),
+    [Datatype.DOUBLE]: validateFloat(value, 15),
+    [Datatype.CHAR]: validateChar(value, 1),
+    [Datatype.VARCHAR]: validateChar(value, 255),
+    [Datatype.TEXT]: { valid: true },
+    [Datatype.DATE]: validateDate(value),
+    [Datatype.TIME]: validateTime(value),
+    [Datatype.TIMESTAMP]: validateTimestamp(value),
+    [Datatype.BOOLEAN]: validateBoolean(value),
+    [Datatype.BIT]: validateBit(value),
+    [Datatype.VARBIT]: validateBit(value),
+    [Datatype.JSON]: validateJson(value),
+    [Datatype.UUID]: validateUUID(value),
     //[ColumnType.XML]: { valid: false, error: 'Unsupported column type (yet)' },
   }
   return valid[datatype] || { valid: false, error: 'Unsupported column type' }
@@ -131,10 +132,14 @@ function validateBoolean(value: string): ValidationResult {
   return { valid: true }
 }
 
-function validateBytea(value: string): ValidationResult {
-  if (!validator.isBase64(value))
-    return { valid: false, error: 'Invalid base64.' }
-
+function validateBit(value: string): ValidationResult {
+  for (let i = 0; i < value.length; i++) {
+    if (value[i] !== '0' && value[i] !== '1')
+      return {
+        valid: false,
+        error: 'Invalid bit value.',
+      }
+  }
   return { valid: true }
 }
 
