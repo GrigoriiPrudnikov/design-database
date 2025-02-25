@@ -54,16 +54,16 @@ function getDefaultValue(column: Column): string {
 
   if (!defaultValue) return ''
 
-  if (datatype === Datatype.BIT || datatype === Datatype.VARBIT) {
+  if (datatype === Datatype.Bit || datatype === Datatype.Varbit) {
     return "B'" + defaultValue + "'"
   }
 
   const needParens: Datatype[] = [
-    Datatype.CHAR,
-    Datatype.VARCHAR,
-    Datatype.TEXT,
-    Datatype.JSON,
-    Datatype.UUID,
+    Datatype.Char,
+    Datatype.Varchar,
+    Datatype.Text,
+    Datatype.Json,
+    Datatype.Uuid,
   ]
   if (needParens.includes(datatype)) return "'" + defaultValue + "'"
 
