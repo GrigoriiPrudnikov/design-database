@@ -1,5 +1,5 @@
-- [ ] Add limits for columns (like VARCHAR(100))
-- [ ] Add error handling in createQuery
+- [x] Add limits for columns (like VARCHAR(100))
+- [x] Add error handling in createQuery
 - [ ] Rename Datatype enum values to CamelCase
 - [ ] Rewrite validateDefaultValue and create "validate" props for changeProperty
 - [ ] Add constraints for columns

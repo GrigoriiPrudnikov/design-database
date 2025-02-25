@@ -7,9 +7,19 @@ interface Params {
   relations: Relation[]
 }
 
+interface CreateQueryResult {
+  query: string
+  error: string | null
+}
+
 // Only for Postgresql at the moment
-export function createQuery({ tables, columns, relations }: Params): string {
+export function createQuery({
+  tables,
+  columns,
+  relations,
+}: Params): CreateQueryResult {
   let query: string[] = []
+  let error: string | null = null
 
   tables.forEach(table => {
     query.push(`CREATE TABLE ${table.data.label} (`)
@@ -17,6 +27,8 @@ export function createQuery({ tables, columns, relations }: Params): string {
     columns
       .filter(c => c.tableId === table.id)
       .forEach(column => {
+        if (error) return
+
         const {
           label,
           datatype,
@@ -28,7 +40,15 @@ export function createQuery({ tables, columns, relations }: Params): string {
           defaultValue,
         } = column
 
-        let line = `  ${label} ${datatype.toUpperCase()}${limit && `(${limit})`}`
+        if (
+          (datatype === Datatype.Char || datatype === Datatype.Bit) &&
+          !limit
+        ) {
+          error = `Column ${label} has datatype ${datatype}, but no limit`
+          return
+        }
+
+        let line = `  ${label} ${datatype.toUpperCase()}${limit && `(${limit})`}${isArray && '[]'}`
 
         if (isPrimaryKey) {
           line += ' PRIMARY KEY'
@@ -46,7 +66,7 @@ export function createQuery({ tables, columns, relations }: Params): string {
     query.push(');')
   })
 
-  return query.join('\n')
+  return { query: query.join('\n'), error }
 }
 
 function getDefaultValue(column: Column): string {
