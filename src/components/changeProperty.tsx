@@ -25,7 +25,7 @@ function selector(state: State & Actions) {
 export function ChangeProperty({ column, placeholder, toChange }: Props) {
   const { updateColumn } = useStore(useShallow(selector))
   const [input, setInput] = useState<string>(column[toChange] || '')
-  const disabled = input.trim() === column[toChange] || input.trim() === ''
+  const disabled = input.trim() === column[toChange]
 
   useEffect(() => {
     setInput(column[toChange] || '')

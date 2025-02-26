@@ -1,11 +1,11 @@
 'use client'
 
-import { Accordion, Button, ScrollArea } from '@/components/ui'
+import { Accordion, ScrollArea } from '@/components/ui'
 import { Actions, State, useStore } from '@/state'
 import { useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { CreateDialog, SidebarTable } from '.'
-import { createQuery } from '@/helpers'
+import ExportQueryDialog from './exportQueryDialog'
 
 function selector(state: State & Actions) {
   return {
@@ -37,14 +37,15 @@ export function Sidebar() {
           title='Create table'
           description='Create table, where you can add, edit, and remove columns'
         />
-        <Button
+        {/*<Button
           variant='ghost'
           onClick={() =>
             console.log(createQuery({ tables, columns, relations: [] }))
           }
         >
           Export query
-        </Button>
+        </Button>*/}
+        <ExportQueryDialog />
       </div>
     </div>
   )

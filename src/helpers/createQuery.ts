@@ -48,7 +48,7 @@ export function createQuery({
           return
         }
 
-        let line = `  ${label} ${datatype.toUpperCase()}${limit && `(${limit})`}${isArray && '[]'}`
+        let line = `  ${label} ${datatype}${limit ? `(${limit})` : ''}${isArray ? '[]' : ''}`
 
         if (isPrimaryKey) {
           line += ' PRIMARY KEY'

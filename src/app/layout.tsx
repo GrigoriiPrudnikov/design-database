@@ -2,12 +2,12 @@ import { ThemeProvider } from '@/components'
 import { Toaster } from '@/components/ui'
 import { ReactFlowProvider } from '@xyflow/react'
 import { Metadata } from 'next'
-import { Rubik } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
-const rubik = Rubik({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['400', '600'],
 })
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' className='dark' suppressHydrationWarning>
-      <body className={`${rubik.className} antialiased h-screen w-screen`}>
+      <body className={`${inter.className} antialiased h-screen w-screen`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='dark'

@@ -1,3 +1,4 @@
+import { hasLimit } from '@/constants'
 import { Actions, State, useStore } from '@/state'
 import { Column, Datatype } from '@/types'
 import { useShallow } from 'zustand/react/shallow'
@@ -29,7 +30,10 @@ export function DatatypeSelect({ column }: Props) {
       <Select
         defaultValue={column.datatype}
         onValueChange={(datatype: Datatype) =>
-          updateColumn(column.id, { datatype })
+          updateColumn(column.id, {
+            datatype,
+            limit: hasLimit.includes(datatype) ? column.limit : null,
+          })
         }
       >
         <SelectTrigger className='bg-zinc-950 w-fit'>
