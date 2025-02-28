@@ -3,6 +3,7 @@
 - [x] Rename Datatype enum values to CamelCase
 - [x] Add dialog for query
 - [x] Add relations to query
+- [x] Move all helper functinos to separate files
 - [ ] Remove isReservedName from createQuery and use something like formatName or something
 - [ ] Add better validation for connecting relations and send error message using toast
 - [ ] Add validation for columns cannot start with a number

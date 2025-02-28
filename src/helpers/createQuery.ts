@@ -1,6 +1,6 @@
 import { Table } from '@/components'
-import { reservedNames } from '@/constants'
 import { Column, Datatype, Relation } from '@/types'
+import { formatName, getDefaultValue } from '.'
 
 interface Params {
   tables: Table[]
@@ -23,9 +23,8 @@ export function createQuery({
   let error: string | null = null
 
   // Tables
-  tables.forEach(table => {
-    const { label } = table.data
-    const tableName = isReservedName(label) ? `"${label}"` : label
+  tables.forEach((table, idx, arr) => {
+    const tableName = formatName(table.data.label)
 
     query.push(`CREATE TABLE ${tableName} (`)
 
@@ -45,7 +44,7 @@ export function createQuery({
           defaultValue,
         } = column
 
-        const columnName = isReservedName(label) ? `"${label}"` : label
+        const columnName = formatName(label)
 
         if (
           (datatype === Datatype.Char || datatype === Datatype.Bit) &&
@@ -70,7 +69,11 @@ export function createQuery({
         query.push(`${line}${idx !== arr.length - 1 ? ',' : ''}`)
       })
 
-    if (!error) query.push(');')
+    if (error) return
+
+    query.push(');')
+
+    if (idx !== arr.length - 1) query.push('')
   })
 
   // Relations
@@ -86,12 +89,8 @@ export function createQuery({
       return
     }
 
-    const sourceColumnName = isReservedName(sourceColumn.label)
-      ? `"${sourceColumn.label}"`
-      : sourceColumn.label
-    const targetColumnName = isReservedName(targetColumn.label)
-      ? `"${targetColumn.label}"`
-      : targetColumn.label
+    const sourceColumnName = formatName(sourceColumn.label)
+    const targetColumnName = formatName(targetColumn.label)
 
     const sourceTable = tables.find(t => t.id === sourceColumn.tableId)
     const targetTable = tables.find(t => t.id === targetColumn.tableId)
@@ -101,42 +100,16 @@ export function createQuery({
       return
     }
 
-    const sourceTableName = isReservedName(sourceTable.data.label)
-      ? `"${sourceTable.data.label}"`
-      : sourceTable.data.label
-    const targetTableName = isReservedName(targetTable.data.label)
-      ? `"${targetTable.data.label}"`
-      : targetTable.data.label
+    const sourceTableName = formatName(sourceTable.data.label)
+    const targetTableName = formatName(targetTable.data.label)
 
     query.push(
-      `ALTER TABLE ${sourceTableName}\nADD FOREIGN KEY (${sourceColumnName})\nREFERENCES ${targetTableName}(${targetColumnName}) ON DELETE CASCADE ON UPDATE CASCADE;`,
+      '',
+      `ALTER TABLE ${sourceTableName}`,
+      `ADD FOREIGN KEY (${sourceColumnName})`,
+      `REFERENCES ${targetTableName}(${targetColumnName}) ON DELETE CASCADE ON UPDATE CASCADE;`,
     )
   })
 
   return { query: query.join('\n'), error }
-}
-
-function getDefaultValue(column: Column): string {
-  const { defaultValue, datatype } = column
-
-  if (!defaultValue) return ''
-
-  if (datatype === Datatype.Bit || datatype === Datatype.Varbit) {
-    return "B'" + defaultValue + "'"
-  }
-
-  const needParens: Datatype[] = [
-    Datatype.Char,
-    Datatype.Varchar,
-    Datatype.Text,
-    Datatype.Json,
-    Datatype.Uuid,
-  ]
-  if (needParens.includes(datatype)) return "'" + defaultValue + "'"
-
-  return defaultValue
-}
-
-function isReservedName(name: string) {
-  return reservedNames.includes(name)
 }
