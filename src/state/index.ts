@@ -2,14 +2,14 @@ import { Table } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
 import { Column, Datatype, Relation } from '@/types'
 import {
-  addEdge,
-  applyNodeChanges,
-  Edge,
-  OnConnect,
-  OnNodesChange,
-  OnReconnect,
-  ReactFlowProps,
-  reconnectEdge,
+    addEdge,
+    applyNodeChanges,
+    Edge,
+    OnConnect,
+    OnNodesChange,
+    OnReconnect,
+    ReactFlowProps,
+    reconnectEdge,
 } from '@xyflow/react'
 import { nanoid } from 'nanoid'
 import { create } from 'zustand'
@@ -145,6 +145,10 @@ export const useStore = create<State & Actions>()(
         set({
           tables: get().tables.filter(t => t.id !== id),
           edges: get().edges.filter(ed => ed.target !== id && ed.source !== id),
+          columns: get().columns.filter(c => c.tableId !== id),
+          relations: get().relations.filter(
+            r => r.target !== id && r.source !== id,
+          ),
         })
       },
       createColumn: tableId => {

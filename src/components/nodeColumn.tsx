@@ -34,6 +34,7 @@ export function NodeColumn({ column }: Props) {
   return (
     <div
       className={cn(jetbrainsMono.className, 'px-2 py-1 relative')}
+      onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       <div className='flex justify-between items-center gap-4'>

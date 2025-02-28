@@ -1,4 +1,5 @@
 import { Table } from '@/components'
+import { reservedNames } from '@/constants'
 import { Column, Datatype, Relation } from '@/types'
 
 interface Params {
@@ -21,12 +22,16 @@ export function createQuery({
   let query: string[] = []
   let error: string | null = null
 
+  // Tables
   tables.forEach(table => {
-    query.push(`CREATE TABLE ${table.data.label} (`)
+    const { label } = table.data
+    const tableName = isReservedName(label) ? `"${label}"` : label
+
+    query.push(`CREATE TABLE ${tableName} (`)
 
     columns
       .filter(c => c.tableId === table.id)
-      .forEach(column => {
+      .forEach((column, idx, arr) => {
         if (error) return
 
         const {
@@ -40,6 +45,8 @@ export function createQuery({
           defaultValue,
         } = column
 
+        const columnName = isReservedName(label) ? `"${label}"` : label
+
         if (
           (datatype === Datatype.Char || datatype === Datatype.Bit) &&
           !limit
@@ -48,10 +55,10 @@ export function createQuery({
           return
         }
 
-        let line = `  ${label} ${datatype}${limit ? `(${limit})` : ''}${isArray ? '[]' : ''}`
+        let line = `  ${columnName} ${datatype}${limit ? `(${limit})` : ''}${isArray ? '[]' : ''}`
 
         if (isPrimaryKey) {
-          line += ' PRIMARY KEY'
+          line += ' PRIMARY KEY,'
           query.push(line)
           return
         }
@@ -60,10 +67,50 @@ export function createQuery({
         if (isUnique) line += ' UNIQUE'
         if (defaultValue !== '') line += ` DEFAULT ${getDefaultValue(column)}`
 
-        query.push(line)
+        query.push(`${line}${idx !== arr.length - 1 ? ',' : ''}`)
       })
 
-    query.push(');')
+    if (!error) query.push(');')
+  })
+
+  // Relations
+  relations.forEach(rel => {
+    if (error) return
+
+    const { source, target } = rel
+    const sourceColumn = columns.find(c => c.id === source)
+    const targetColumn = columns.find(c => c.id === target)
+
+    if (!sourceColumn || !targetColumn) {
+      error = `Relation ${source} to ${target} is not valid`
+      return
+    }
+
+    const sourceColumnName = isReservedName(sourceColumn.label)
+      ? `"${sourceColumn.label}"`
+      : sourceColumn.label
+    const targetColumnName = isReservedName(targetColumn.label)
+      ? `"${targetColumn.label}"`
+      : targetColumn.label
+
+    const sourceTable = tables.find(t => t.id === sourceColumn.tableId)
+    const targetTable = tables.find(t => t.id === targetColumn.tableId)
+
+    if (!sourceTable || !targetTable) {
+      error = `Relation ${sourceColumn.label} to ${targetColumn.label} is not valid`
+      return
+    }
+
+    const sourceTableName = isReservedName(sourceTable.data.label)
+      ? `"${sourceTable.data.label}"`
+      : sourceTable.data.label
+    const targetTableName = isReservedName(targetTable.data.label)
+      ? `"${targetTable.data.label}"`
+      : targetTable.data.label
+
+    query.push(
+      `ALTER TABLE ${sourceTableName}\nADD FOREIGN KEY (${sourceColumnName})\nREFERENCES ${targetTableName}(${targetColumnName}) ON DELETE CASCADE ON UPDATE CASCADE;`,
+    )
   })
 
   return { query: query.join('\n'), error }
@@ -88,4 +135,8 @@ function getDefaultValue(column: Column): string {
   if (needParens.includes(datatype)) return "'" + defaultValue + "'"
 
   return defaultValue
+}
+
+function isReservedName(name: string) {
+  return reservedNames.includes(name)
 }

@@ -1,6 +1,8 @@
+'use client'
+
 import { cn } from '@/lib/utils'
-import { Copy } from 'lucide-react'
 import { JetBrains_Mono } from 'next/font/google'
+import { useState } from 'react'
 import { Button, ScrollArea } from './ui'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -9,7 +11,16 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export default function Code({ code }: { code: string }) {
-  function copy() {}
+  const [copied, setCopied] = useState(false)
+
+  function copy() {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true)
+      setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+    })
+  }
 
   return (
     <ScrollArea
@@ -19,8 +30,13 @@ export default function Code({ code }: { code: string }) {
       )}
     >
       {code}
-      <Button variant='outline' size='icon' className='absolute top-2 right-2'>
-        <Copy className='h-4 w-4 text-white' />
+      <Button
+        variant='outline'
+        size='sm'
+        className='absolute top-2 right-2'
+        onClick={copy}
+      >
+        {copied ? 'Copied' : 'Copy'}
       </Button>
     </ScrollArea>
   )

@@ -37,7 +37,7 @@ export default function ExportQueryDialog() {
         Export query
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className='max-w-[56em] w-fit'>
           <DialogHeader>
             <DialogTitle>Export query</DialogTitle>
           </DialogHeader>
