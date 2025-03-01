@@ -57,7 +57,7 @@ export function createQuery({
         let line = `  ${columnName} ${datatype}${limit ? `(${limit})` : ''}${isArray ? '[]' : ''}`
 
         if (isPrimaryKey) {
-          line += ' PRIMARY KEY,'
+          line += ' PRIMARY KEY' + (idx === arr.length - 1 ? '' : ',')
           query.push(line)
           return
         }
