@@ -1,12 +1,10 @@
 'use client'
 
-import { validateDefaultValue } from '@/helpers'
 import { Actions, State, useStore } from '@/state'
 import { Column } from '@/types'
 import { RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import validator from 'validator'
 import { useShallow } from 'zustand/react/shallow'
 import { Button, Input } from './ui'
 
@@ -14,6 +12,7 @@ interface Props {
   column: Column
   placeholder: string
   toChange: 'label' | 'defaultValue' | 'limit'
+  validate?: (value: string) => { error: string | null }
 }
 
 function selector(state: State & Actions) {
@@ -22,30 +21,29 @@ function selector(state: State & Actions) {
   }
 }
 
-export function ChangeProperty({ column, placeholder, toChange }: Props) {
+export function ChangeProperty({
+  column,
+  placeholder,
+  toChange,
+  validate,
+}: Props) {
   const { updateColumn } = useStore(useShallow(selector))
   const [input, setInput] = useState<string>(column[toChange] || '')
   const disabled = input.trim() === column[toChange]
 
   useEffect(() => {
     setInput(column[toChange] || '')
-  }, [column.datatype])
+  }, [column.datatype, column, toChange])
 
   function onConfirm() {
-    let valid = true
-    let error = ''
-
-    if (toChange === 'defaultValue') {
-      const validationResult = validateDefaultValue(input, column.datatype)
-      valid = validationResult.valid
-      error = validationResult.error || ''
-    }
-    if (toChange === 'limit' && !validator.isInt(input)) {
-      valid = false
-      error = 'Limit must be an integer'
+    if (!validate) {
+      updateColumn(column.id, { [toChange]: input })
+      return
     }
 
-    if (!valid && input.trim() !== '') {
+    const { error } = validate(input)
+
+    if (error && input.trim() !== '') {
       return toast.error(error)
     }
 

@@ -1,9 +1,9 @@
 import { Actions, State, useStore } from '@/state'
 import { Node, NodeProps, useNodeId } from '@xyflow/react'
+import { useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { NodeColumn } from '.'
 import { Card } from './ui'
-import { useMemo } from 'react'
 
 export type Table = Node<{ label: string }, 'table'>
 
@@ -19,7 +19,7 @@ export function Table({ data }: NodeProps<Table>) {
   const { columns } = useStore(useShallow(selector))
   const tableColumns = useMemo(
     () => columns.filter(c => c.tableId === id),
-    [columns],
+    [columns, id],
   )
 
   return (

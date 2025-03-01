@@ -4,10 +4,10 @@
 - [x] Add dialog for query
 - [x] Add relations to query
 - [x] Move all helper functinos to separate files
-- [ ] Remove isReservedName from createQuery and use something like formatName or something
+- [x] Remove isReservedName from createQuery and use something like formatName or something
+- [x] Rewrite validateDefaultValue and create "validate" props for changeProperty
 - [ ] Add better validation for connecting relations and send error message using toast
-- [ ] Add validation for columns cannot start with a number
+- [ ] Add validation for columns (cannot start with a number)
 - [ ] Add validating the same types for relationships
 - [ ] Remove targetType and sourceType from relationship
-- [ ] Rewrite validateDefaultValue and create "validate" props for changeProperty
 - [ ] Add constraints for columns

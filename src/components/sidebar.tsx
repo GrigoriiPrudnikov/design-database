@@ -16,7 +16,7 @@ function selector(state: State & Actions) {
 }
 
 export function Sidebar() {
-  const { tables, columns, createTable } = useStore(useShallow(selector))
+  const { tables, createTable } = useStore(useShallow(selector))
   const sortedTables = useMemo(
     () => tables.sort((a, b) => a.data.label.localeCompare(b.data.label)),
     [tables],
@@ -37,14 +37,6 @@ export function Sidebar() {
           title='Create table'
           description='Create table, where you can add, edit, and remove columns'
         />
-        {/*<Button
-          variant='ghost'
-          onClick={() =>
-            console.log(createQuery({ tables, columns, relations: [] }))
-          }
-        >
-          Export query
-        </Button>*/}
         <ExportQueryDialog />
       </div>
     </div>

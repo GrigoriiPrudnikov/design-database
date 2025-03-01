@@ -2,14 +2,14 @@ import { Table } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
 import { Column, Datatype, Relation } from '@/types'
 import {
-    addEdge,
-    applyNodeChanges,
-    Edge,
-    OnConnect,
-    OnNodesChange,
-    OnReconnect,
-    ReactFlowProps,
-    reconnectEdge,
+  addEdge,
+  applyNodeChanges,
+  Edge,
+  OnConnect,
+  OnNodesChange,
+  OnReconnect,
+  ReactFlowProps,
+  reconnectEdge,
 } from '@xyflow/react'
 import { nanoid } from 'nanoid'
 import { create } from 'zustand'
@@ -87,10 +87,12 @@ export const useStore = create<State & Actions>()(
           edgeReconnectSuccessful: true,
           edges: reconnectEdge(oldEdge, newConnection, get().edges),
           relations: get().relations.map(rel => {
-            if (rel.id !== foundRelation.id) return rel
+            const target = newConnection.targetHandle?.split('__')[0]
+            if (rel.id !== foundRelation.id || !target) return rel
+
             return {
               ...rel,
-              target: newConnection.targetHandle?.split('__')[0]!,
+              target,
             }
           }),
         })

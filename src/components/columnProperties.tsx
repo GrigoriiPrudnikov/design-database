@@ -1,11 +1,13 @@
 'use client'
 
+import { hasLimit } from '@/constants'
+import { validateDefaultValue } from '@/helpers'
 import { Actions, State, useStore } from '@/state'
 import { Column } from '@/types'
+import { isInt } from 'validator'
 import { useShallow } from 'zustand/react/shallow'
 import { ChangeProperty, DatatypeSelect, DeleteColumn, ToggleProperty } from '.'
 import { Button, Popover, PopoverContent, PopoverTrigger } from './ui'
-import { hasLimit } from '@/constants'
 
 interface Props {
   column: Column
@@ -20,11 +22,10 @@ function selector(state: State & Actions) {
 
 export function ColumnProperties({ column }: Props) {
   const { updateColumn, updatePrimaryKey } = useStore(useShallow(selector))
+  const { id, datatype, isPrimaryKey, isRequired, isUnique, isArray } = column
 
   function toggleProperty(property: 'isRequired' | 'isUnique' | 'isArray') {
-    updateColumn(column.id, {
-      [property]: !column[property],
-    })
+    updateColumn(id, { [property]: !column[property] })
   }
 
   return (
@@ -47,41 +48,47 @@ export function ColumnProperties({ column }: Props) {
         <div className='flex flex-col gap-2'>
           <ToggleProperty
             label='Primary Key'
-            value={column.isPrimaryKey}
+            value={isPrimaryKey}
             onToggle={() => updatePrimaryKey(column.id)}
-            disabled={column.isPrimaryKey}
+            disabled={isPrimaryKey}
           />
           <ToggleProperty
             label='Unique'
-            value={column.isUnique}
+            value={isUnique}
             onToggle={() => toggleProperty('isUnique')}
-            disabled={column.isPrimaryKey}
+            disabled={isPrimaryKey}
           />
           <ToggleProperty
             label='Required'
-            value={column.isRequired}
+            value={isRequired}
             onToggle={() => toggleProperty('isRequired')}
-            disabled={column.isPrimaryKey}
+            disabled={isPrimaryKey}
           />
           <ToggleProperty
             label='Array'
-            value={column.isArray}
+            value={isArray}
             onToggle={() => toggleProperty('isArray')}
-            disabled={column.isPrimaryKey}
+            disabled={isPrimaryKey}
           />
           <DatatypeSelect column={column} />
-          {hasLimit.includes(column.datatype) && (
+          {hasLimit.includes(datatype) && (
             <ChangeProperty
               column={column}
               placeholder='Limit'
               toChange='limit'
+              validate={value =>
+                isInt(value)
+                  ? { error: null }
+                  : { error: 'Not a valid integer.' }
+              }
             />
           )}
-          {!column.isPrimaryKey && (
+          {!isPrimaryKey && (
             <ChangeProperty
               column={column}
               placeholder='Default value'
               toChange='defaultValue'
+              validate={validateDefaultValue(datatype)}
             />
           )}
           <DeleteColumn column={column} />

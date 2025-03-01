@@ -19,7 +19,7 @@ export function createQuery({
   columns,
   relations,
 }: Params): CreateQueryResult {
-  let query: string[] = []
+  const query: string[] = []
   let error: string | null = null
 
   // Tables
