@@ -7,9 +7,14 @@
 - [x] Remove isReservedName from createQuery and use something like formatName or something
 - [x] Rewrite validateDefaultValue and create "validate" props for changeProperty
 - [x] Remove targetType and sourceType from relationship
-- [ ] Add better validation for connecting relations and send error message using toast
+- [ ] Add better validation for connecting relations
+  - [x] Check if source and target columns are compatible
 - [x] Add validation for columns (cannot start with a number)
-- [ ] Add validating the same types for relationships
+- [x] Add validating the same types for relationships
 - [ ] Add one create button for tables and columns
 - [ ] Add constraints for columns
 - [ ] Add toast errors in state/index.ts
+  - [x] Add toast errors in onConnect
+  - [x] Add toast errors in onReconnect
+  - [ ] Add toast errors in createTable
+  - [ ] Add toast errors in createColumn

@@ -124,7 +124,6 @@ export const useStore = create<State & Actions>()(
 
         if (!isValidDataTypes) {
           toast.error('Cannot connect columns with incompatible datatypes')
-          set({ edgeReconnectSuccessful: true })
           return
         }
 
@@ -144,16 +143,17 @@ export const useStore = create<State & Actions>()(
       },
       onReconnectStart: () => set({ edgeReconnectSuccessful: false }),
       onReconnectEnd: (_, edge) => {
-        if (!get().edgeReconnectSuccessful) {
+        if (get().edgeReconnectSuccessful) {
+          set({ edgeReconnectSuccessful: false })
           set({
-            edges: get().edges.filter(e => e.id !== edge.id),
-            relations: get().relations.filter(
-              rel => rel.target !== edge.targetHandle?.split('__')[0],
-            ),
-          })
+          edges: get().edges.filter(e => e.id !== edge.id),
+          relations: get().relations.filter(
+            rel => rel.target !== edge.targetHandle?.split('__')[0],
+          ),
+        }
         }
 
-        set({ edgeReconnectSuccessful: false })
+        )
       },
       createTable: label => {
         const tables = get().tables
