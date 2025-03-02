@@ -6,7 +6,7 @@ import { Column } from '@/types'
 import { Position } from '@xyflow/react'
 import { JetBrains_Mono } from 'next/font/google'
 import { useState } from 'react'
-import { CustomHandle, RelationTypeToggle } from '.'
+import { CustomHandle } from '.'
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -38,9 +38,9 @@ export function NodeColumn({ column }: Props) {
       onMouseLeave={() => setHover(false)}
     >
       <div className='flex justify-between items-center gap-4'>
-        <div className='flex items-center gap-1'>
-          <div className='break-all max-w-full'>{label}</div>
-          <RelationTypeToggle columnId={id} />
+        <div className='break-all max-w-full'>
+          {label}{' '}
+          <span className='text-zinc-400'>{column.isPrimaryKey && 'PK'}</span>
         </div>
         <div>
           {datatype}

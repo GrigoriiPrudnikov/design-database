@@ -18,7 +18,10 @@ export function Table({ data }: NodeProps<Table>) {
   const { label } = data
   const { columns } = useStore(useShallow(selector))
   const tableColumns = useMemo(
-    () => columns.filter(c => c.tableId === id),
+    () =>
+      columns
+        .filter(c => c.tableId === id)
+        .sort((a, b) => a.label.localeCompare(b.label)),
     [columns, id],
   )
 

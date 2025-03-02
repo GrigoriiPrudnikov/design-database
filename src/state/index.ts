@@ -34,7 +34,6 @@ export interface Actions {
   createColumn: (tableId: string) => (label: string) => void
   updateColumn: (id: string, changes: Partial<Column>) => void
   removeColumn: (id: string) => void
-  changeRelationType: (id: string, toChange: 'target' | 'source') => void
   setPrimaryKey: (columnId: string) => void
 }
 
@@ -65,8 +64,6 @@ export const useStore = create<State & Actions>()(
           id: nanoid(),
           source: sourceHandle.split('__')[0],
           target: targetHandle.split('__')[0],
-          sourceType: 'one',
-          targetType: 'one',
         }
 
         set({ edges, relations: [...get().relations, relation] })
@@ -184,21 +181,6 @@ export const useStore = create<State & Actions>()(
       },
       removeColumn: id => {
         set({ columns: get().columns.filter(c => c.id !== id) })
-      },
-      changeRelationType: (id, toChange) => {
-        set({
-          relations: get().relations.map(rel => {
-            if (rel.id !== id) return rel
-
-            const key = toChange === 'target' ? 'targetType' : 'sourceType'
-            const value = rel[key] === 'one' ? 'many' : 'one'
-
-            return {
-              ...rel,
-              [key]: value,
-            }
-          }),
-        })
       },
       setPrimaryKey: columnId => {
         const found = get().columns.find(c => c.id === columnId)
