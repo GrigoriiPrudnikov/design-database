@@ -12,3 +12,4 @@
 - [ ] Add validating the same types for relationships
 - [ ] Add one create button for tables and columns
 - [ ] Add constraints for columns
+- [ ] Add toast errors in state/index.ts

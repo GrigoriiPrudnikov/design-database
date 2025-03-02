@@ -2,16 +2,17 @@ import { Table } from '@/components'
 import { calcNodePosition, toSnakeCase } from '@/helpers'
 import { Column, Datatype, Relation } from '@/types'
 import {
-  addEdge,
-  applyNodeChanges,
-  Edge,
-  OnConnect,
-  OnNodesChange,
-  OnReconnect,
-  ReactFlowProps,
-  reconnectEdge,
+    addEdge,
+    applyNodeChanges,
+    Edge,
+    OnConnect,
+    OnNodesChange,
+    OnReconnect,
+    ReactFlowProps,
+    reconnectEdge,
 } from '@xyflow/react'
 import { nanoid } from 'nanoid'
+import { toast } from 'sonner'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -53,11 +54,29 @@ export const useStore = create<State & Actions>()(
       onConnect: connection => {
         const { sourceHandle, targetHandle } = connection
 
-        const isValid =
-          sourceHandle?.split('__')[0] !== targetHandle?.split('__')[0]
-        if (!isValid) return
-
         if (!sourceHandle || !targetHandle) return
+
+        const sourceColumnId = sourceHandle.split('__')[0]
+        const targetColumnId = targetHandle.split('__')[0]
+
+        if (sourceColumnId === targetColumnId) {
+          toast.error('Cannot connect columns to themselves')
+          return
+        }
+
+        const sourceColumn = get().columns.find(c => c.id === sourceColumnId)
+        const targetColumn = get().columns.find(c => c.id === targetColumnId)
+
+        if (!sourceColumn || !targetColumn) {
+          toast.error('Source or target column does not exist')
+          return
+        }
+
+        // Add support for like serial-int, bigserial-bigint
+        if (sourceColumn.datatype !== targetColumn.datatype) {
+          toast.error('Cannot connect columns with different datatypes')
+          return
+        }
 
         const edges = addEdge(connection, get().edges)
         const relation: Relation = {
