@@ -8,7 +8,7 @@
 - [x] Rewrite validateDefaultValue and create "validate" props for changeProperty
 - [x] Remove targetType and sourceType from relationship
 - [ ] Add better validation for connecting relations and send error message using toast
-- [ ] Add validation for columns (cannot start with a number)
+- [x] Add validation for columns (cannot start with a number)
 - [ ] Add validating the same types for relationships
 - [ ] Add one create button for tables and columns
 - [ ] Add constraints for columns

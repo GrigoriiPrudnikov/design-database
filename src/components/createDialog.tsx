@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
+import { isInt } from 'validator'
 import {
   Button,
   Dialog,
@@ -18,15 +20,19 @@ interface Props {
   onCreate: (label: string) => void
 }
 
-// TODO:
-// 1. confirm on enter
-// 2. if column is single in table, make it primary key
-
 export function CreateDialog({ title, description, onCreate }: Props) {
   const [open, setOpen] = useState<boolean>(false)
   const [input, setInput] = useState<string>('Untitled')
   const valid = input.trim().length > 0
+
   function onConfirm(): void {
+    const startsWithNumber = isInt(input.trim()[0])
+
+    if (startsWithNumber) {
+      toast.error('Column or table name cannot start with a number')
+      return
+    }
+
     onCreate(input)
     setInput('Untitled')
     setOpen(false)
