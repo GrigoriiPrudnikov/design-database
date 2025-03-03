@@ -16,5 +16,6 @@
 - [ ] Add toast errors in state/index.ts
   - [x] Add toast errors in onConnect
   - [x] Add toast errors in onReconnect
-  - [ ] Add toast errors in createTable
-  - [ ] Add toast errors in createColumn
+  - [x] Add toast errors in createTable
+  - [x] Add toast errors in createColumn
+- [ ] Do not hide createDialog, if entity already exists

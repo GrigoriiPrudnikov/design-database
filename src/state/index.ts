@@ -60,16 +60,14 @@ export const useStore = create<State & Actions>()(
         const targetColumnId = targetHandle.split('__')[0]
 
         if (sourceColumnId === targetColumnId) {
-          toast.error('Cannot connect columns to themselves')
-          return
+          return toast.error('Cannot connect columns to themselves')
         }
 
         const sourceColumn = get().columns.find(c => c.id === sourceColumnId)
         const targetColumn = get().columns.find(c => c.id === targetColumnId)
 
         if (!sourceColumn || !targetColumn) {
-          toast.error('Source or target column does not exist')
-          return
+          return toast.error('Source or target column does not exist')
         }
 
         const isValidDataTypes = isCompatibleDatatype(
@@ -105,16 +103,14 @@ export const useStore = create<State & Actions>()(
         const targetColumnId = targetHandle.split('__')[0]
 
         if (sourceColumnId === targetColumnId) {
-          toast.error('Cannot connect columns to themselves')
-          return
+          return toast.error('Cannot connect columns to themselves')
         }
 
         const sourceColumn = get().columns.find(c => c.id === sourceColumnId)
         const targetColumn = get().columns.find(c => c.id === targetColumnId)
 
         if (!sourceColumn || !targetColumn) {
-          toast.error('Source or target column does not exist')
-          return
+          return toast.error('Source or target column does not exist')
         }
 
         const isValidDataTypes = isCompatibleDatatype(
@@ -123,9 +119,10 @@ export const useStore = create<State & Actions>()(
         )
 
         if (!isValidDataTypes) {
-          toast.error('Cannot connect columns with incompatible datatypes')
           set({ edgeReconnectSuccessful: true })
-          return
+          return toast.error(
+            'Cannot connect columns with incompatible datatypes',
+          )
         }
 
         set({
@@ -158,7 +155,7 @@ export const useStore = create<State & Actions>()(
       createTable: label => {
         const tables = get().tables
         const found = tables.find(r => r.data.label === toSnakeCase(label))
-        if (found) return
+        if (found) return toast.error('Table with this name already exists')
 
         const newTable: Table = {
           id: nanoid(),
@@ -201,7 +198,7 @@ export const useStore = create<State & Actions>()(
       createColumn: tableId => {
         return label => {
           const found = get().columns.find(c => c.label === toSnakeCase(label))
-          if (found) return
+          if (found) return toast.error('Column with this name already exists')
 
           const newColumn: Column = {
             id: nanoid(),
