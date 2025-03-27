@@ -1,1 +1,1 @@
-export * from './useAllConnections';
+export * from './useAllConnections'

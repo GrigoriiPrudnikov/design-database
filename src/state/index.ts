@@ -41,8 +41,54 @@ export interface Actions {
 export const useStore = create<State & Actions>()(
   persist(
     (set, get) => ({
-      tables: [],
-      columns: [],
+      tables: [
+        {
+          id: '0',
+          data: {
+            label: 'user',
+          },
+          type: 'table',
+          position: { x: 0, y: 0 },
+        },
+      ],
+      columns: [
+        {
+          id: '0',
+          label: 'id',
+          datatype: Datatype.Serial,
+          isPrimaryKey: true,
+          isRequired: true,
+          isUnique: true,
+          isArray: false,
+          limit: '',
+          defaultValue: '',
+          tableId: '0',
+        },
+        {
+          id: '1',
+          label: 'name',
+          datatype: Datatype.Varchar,
+          isPrimaryKey: false,
+          isRequired: true,
+          isUnique: false,
+          isArray: false,
+          limit: '',
+          defaultValue: '',
+          tableId: '0',
+        },
+        {
+          id: '2',
+          label: 'email',
+          datatype: Datatype.Varchar,
+          isPrimaryKey: false,
+          isRequired: true,
+          isUnique: false,
+          isArray: false,
+          limit: '',
+          defaultValue: '',
+          tableId: '0',
+        },
+      ],
       edges: [],
       relations: [],
       edgeReconnectSuccessful: true,
